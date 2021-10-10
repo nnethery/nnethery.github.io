@@ -1,25 +1,27 @@
 {
   "files": {
     "main.css": "/daytripper/static/css/main.6dea0f05.chunk.css",
-    "main.js": "/daytripper/static/js/main.12f16041.chunk.js",
-    "main.js.map": "/daytripper/static/js/main.12f16041.chunk.js.map",
-    "runtime-main.js": "/daytripper/static/js/runtime-main.66630f4e.js",
-    "runtime-main.js.map": "/daytripper/static/js/runtime-main.66630f4e.js.map",
+    "main.js": "/daytripper/static/js/main.20656144.chunk.js",
+    "main.js.map": "/daytripper/static/js/main.20656144.chunk.js.map",
+    "runtime-main.js": "/daytripper/static/js/runtime-main.a58ae359.js",
+    "runtime-main.js.map": "/daytripper/static/js/runtime-main.a58ae359.js.map",
     "static/css/2.9345dda6.chunk.css": "/daytripper/static/css/2.9345dda6.chunk.css",
-    "static/js/2.2478857d.chunk.js": "/daytripper/static/js/2.2478857d.chunk.js",
-    "static/js/2.2478857d.chunk.js.map": "/daytripper/static/js/2.2478857d.chunk.js.map",
-    "static/js/3.fa6b143a.chunk.js": "/daytripper/static/js/3.fa6b143a.chunk.js",
-    "static/js/3.fa6b143a.chunk.js.map": "/daytripper/static/js/3.fa6b143a.chunk.js.map",
+    "static/js/2.1b1b8aa3.chunk.js": "/daytripper/static/js/2.1b1b8aa3.chunk.js",
+    "static/js/2.1b1b8aa3.chunk.js.map": "/daytripper/static/js/2.1b1b8aa3.chunk.js.map",
+    "static/js/3.998db3e0.chunk.js": "/daytripper/static/js/3.998db3e0.chunk.js",
+    "static/js/3.998db3e0.chunk.js.map": "/daytripper/static/js/3.998db3e0.chunk.js.map",
     "index.html": "/daytripper/index.html",
     "static/css/2.9345dda6.chunk.css.map": "/daytripper/static/css/2.9345dda6.chunk.css.map",
     "static/css/main.6dea0f05.chunk.css.map": "/daytripper/static/css/main.6dea0f05.chunk.css.map",
-    "static/js/2.2478857d.chunk.js.LICENSE.txt": "/daytripper/static/js/2.2478857d.chunk.js.LICENSE.txt"
+    "static/js/2.1b1b8aa3.chunk.js.LICENSE.txt": "/daytripper/static/js/2.1b1b8aa3.chunk.js.LICENSE.txt",
+    "static/js/mapbox-gl-csp-worker.396d71ed.worker.js": "/daytripper/static/js/mapbox-gl-csp-worker.396d71ed.worker.js",
+    "static/js/mapbox-gl-csp-worker.396d71ed.worker.js.map": "/daytripper/static/js/mapbox-gl-csp-worker.396d71ed.worker.js.map"
   },
   "entrypoints": [
-    "static/js/runtime-main.66630f4e.js",
+    "static/js/runtime-main.a58ae359.js",
     "static/css/2.9345dda6.chunk.css",
-    "static/js/2.2478857d.chunk.js",
+    "static/js/2.1b1b8aa3.chunk.js",
     "static/css/main.6dea0f05.chunk.css",
-    "static/js/main.12f16041.chunk.js"
+    "static/js/main.20656144.chunk.js"
   ]
 }
