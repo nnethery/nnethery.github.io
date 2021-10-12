@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/daytripper/static/css/main.6dea0f05.chunk.css",
-    "main.js": "/daytripper/static/js/main.d3764eb1.chunk.js",
-    "main.js.map": "/daytripper/static/js/main.d3764eb1.chunk.js.map",
+    "main.js": "/daytripper/static/js/main.4d881095.chunk.js",
+    "main.js.map": "/daytripper/static/js/main.4d881095.chunk.js.map",
     "runtime-main.js": "/daytripper/static/js/runtime-main.03c3b5bc.js",
     "runtime-main.js.map": "/daytripper/static/js/runtime-main.03c3b5bc.js.map",
     "static/css/2.9345dda6.chunk.css": "/daytripper/static/css/2.9345dda6.chunk.css",
@@ -22,6 +22,6 @@
     "static/css/2.9345dda6.chunk.css",
     "static/js/2.e20ab871.chunk.js",
     "static/css/main.6dea0f05.chunk.css",
-    "static/js/main.d3764eb1.chunk.js"
+    "static/js/main.4d881095.chunk.js"
   ]
 }
