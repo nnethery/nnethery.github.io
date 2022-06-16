@@ -14,13 +14,8 @@
 </head>
 
 <body>
+  <div style="height: 30px;"></div>
   <div class="container">
-    <div id="success" class="alert alert-success alert-dismissible fade" role="alert">
-      Report successfully submitted.
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
     <form id="report">
       <div class="form-group">
         <label for="exampleFormControlSelect1">Select Student</label>
@@ -39,6 +34,7 @@
       </div>
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+
   </div>
 
   <script>
@@ -47,7 +43,19 @@
       $(this).each(function () {
         this.reset();
       });
-      $("#success").addClass("show");
+
+      const alert = '<div id="success" class="alert alert-success show fade" role="alert">Report successfully submitted.</div>'
+
+      $('.container').prepend(alert)
+
+      // $(".alert").addClass('show')
+
+      console.log('Hello')
+
+      setTimeout(function () {
+        // Closing the alert
+        $('.alert').alert('close');
+      }, 4000);
     });
   </script>
 
