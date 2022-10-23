@@ -5,13 +5,15 @@
 
 
   <url>
-    <loc>https://nethery.dev/</loc>
-    <lastmod>2022-06-28T02:06:12+00:00</lastmod>
+    <loc>https://nethery.dev/404/</loc>
   </url>
-
+  <url>
+    <loc>https://nethery.dev/</loc>
+    <lastmod>2022-10-22T02:06:07+00:00</lastmod>
+  </url>
   <url>
     <loc>https://nethery.dev/daytripper/</loc>
-    <lastmod>2022-06-28T02:06:12+00:00</lastmod>
+    <lastmod>2022-10-22T02:06:07+00:00</lastmod>
   </url>
 
 
