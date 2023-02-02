@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>MakeItMIDI</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Turn acoustic instruments into digital ones with on-device machine learning.">
+    <meta name="author" content="Noah Nethery">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link
+        href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
+        rel='stylesheet' type='text/css'>
+    <!-- FontAwesome JS-->
+    <script defer src="assets/fontawesome/js/all.min.js"></script>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+
+    <!-- Image stuff -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+</head>
+
+<body>
+    <div class="logo navbar-brand" style="text-align: center;">
+        <span class="logo-icon-wrapper"><img class="logo-icon" src="assets/images/logo.png" alt="icon"
+                style="width: 500px;"></span>
+    </div>
+
+    <div id="features" class="features-section">
+        <div class="container text-center">
+            <!-- <h2 class="section-title">MakeItMIDI</h2> -->
+            <p class="intro">
+                Turn acoustic instruments into digital ones with on-device machine learning.</p>
+
+            <div class="tabbed-area row">
+
+                <!-- Nav tabs -->
+                <div class="feature-nav nav nav-pill flex-column col-lg-4 col-md-6 col-12 order-0 order-md-1"
+                    role="tablist" aria-orientation="vertical">
+                    <a class="nav-link active mb-lg-3" href="#about" aria-controls="about" data-bs-toggle="pill"
+                        role="tab" aria-selected="true"><i class="fa-solid fa-magic me-2"></i>About</a>
+                    <a class="nav-link mb-lg-3" href="#supported-instruments" aria-controls="supported-instruments"
+                        data-bs-toggle="pill" role="tab" aria-selected="false"><i
+                            class="fa-solid fa-music me-2"></i>Supported Instruments</a>
+                    <a class="nav-link mb-lg-3" href="#compatability" aria-controls="compatability"
+                        data-bs-toggle="pill" role="tab" aria-selected="false"><i
+                            class="fa-solid fa-desktop me-2"></i>Compatability</a>
+                    <a class="nav-link mb-lg-3" href="#contributing" aria-controls="contributing" data-bs-toggle="pill"
+                        role="tab" aria-selected="false"><i class="fa-solid fa-code me-2"></i>Contributing</a>
+                    <a class="nav-link mb-lg-3" href="#faq" aria-controls="faq" data-bs-toggle="pill" role="tab"
+                        aria-selected="false"><i class="fa-solid fa-list me-2"></i>FAQ</a>
+                    <a class="nav-link mb-lg-3" href="#privacy" aria-controls="privacy" data-bs-toggle="pill" role="tab"
+                        aria-selected="false"><i class="fa-solid fa-lock me-2"></i>Privacy</a>
+                    <a class="nav-link mb-lg-3" href="#contact" aria-controls="contact" data-bs-toggle="pill" role="tab"
+                        aria-selected="false"><i class="fa-solid fa-envelope me-2"></i>Contact</a>
+                    <!-- <a class="nav-link mb-lg-3" href="#feature-8" aria-controls="feature-8" data-bs-toggle="pill"
+                        role="tab" aria-selected="false"><i class="fa-solid fa-heart me-2"></i>Free Updates &amp;
+                        Support</a> -->
+                </div>
+
+                <!-- Tab panes -->
+                <div class="feature-content tab-content col-lg-8 col-md-6 col-12 order-1 order-md-0">
+                    <div role="tabpanel" class="tab-pane fade show active" id="about">
+                        <img class="img-fluid" src="assets/images/diagram.jpg"
+                            alt="A diagram of how to use MakeItMIDI: play piano, record on phone, transmits to computer.">
+                        <div class="intro">Illustration by Rose Haslbauer</div>
+                        <div style="text-align: left;">
+                            <p>
+                                MakeItMIDI is an open source app that transcribes audio and digitizes
+                                it to the MIDI protocol standard in real-time. Play a note on your piano and it simply
+                                "shows up" on on your digital audio workstation or notation software using your phone as
+                                the go-between.
+                            </p>
+                            <p>
+                                It uses the state-of-the-art in music and machine learning research and is made possible
+                                by
+                                neural network hardware acceleration in modern phones and tablets.
+                            </p>
+                            <p>Making music on a computer is much more intuitive with a MIDI keyboard but there is no
+                                reason that people with real, acoustic pianos should be left out. MakeItMIDI makes
+                                it easier for anyone at home to be a digital music-maker.</p>
+                            <p>Connect your phone to a computer via USB and click "Enable" on your iOS device in
+                                <b>Audio MIDI Setup</b> on macOS to get started.
+                            </p>
+                        </div>
+                        <img class="img-fluid" src="assets/images/audio-devices-mac.png"
+                            alt="A screenshot of the Audio MIDI Setup app on macOS.">
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="supported-instruments" style="text-align: left;">
+                        <h2>Instruments</h2>
+                        <ul>
+                            <li>
+                                Piano
+                            </li>
+                        </ul>
+                        <p>
+                            The next version will support transcription of <b>Voice</b>, <b>Guitar</b>, and
+                            <b>Drums</b>.
+                        </p>
+                        <p>
+                            We also intend on improving piano transcription by modifying newly trained models. If any of
+                            this interests you, please consider <a href="#contributing" aria-controls="contributing"
+                                data-bs-toggle="pill" role="tab" aria-selected="false">contributing</a> to the project.
+                        </p>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="compatability" style="text-align: left;">
+                        <h2>Devices</h2>
+                        <ul>
+                            <li>
+                                iPhone, iPad, and iPod touch (iOS 14.0+)
+                            </li>
+                        </ul>
+                        <p>
+                            Android, followed by macOS and Windows support are next in line for support.
+                        </p>
+                        <br>
+                        <h2>MIDI hosts</h2>
+                        <ul>
+                            <li>
+                                macOS (13.0+ Ventura comfirmed, earlier versions not validated yet)
+                            </li>
+                        </ul>
+                        <p>
+                            There is experimental support for Windows using <a
+                                href="https://www.tobias-erichsen.de/software/rtpmidi.html">rtpMIDI</a>. This will be
+                            fully validated in the near future.
+                        </p>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="contributing">
+                        <p>
+                            This software is still considered in beta and there are plenty of bugs to fix and
+                            enhancements to make.
+                        </p>
+                        <div>
+                            <p>
+                                Please star the repo and consider contributing on GitHub.
+                            </p>
+                            <a class="github-button" href="https://github.com/nnethery/MakeItMIDI-iOS" data-size="large" data-show-count="true"
+                                aria-label="Star nnethery/MakeItMIDI-iOS on GitHub">Star</a>
+                        </div>
+                        <p>See the roadmap on Trello <a href="https://trello.com/b/BYi83s4l/makeitmidi">here</a>.</p>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="faq" style="text-align: left;">
+                        <p><b>Why is the app predicting many extra notes that I didn't play?</b></p>
+                        <p>These false positives are probably octaves or perfect fifths above the notes you are playing.
+                            The long answer has to do with picking up the frequencies of higher partials in the <a
+                                href="https://www.audiolabs-erlangen.de/resources/MIR/FMP/C1/C1S3_HarmonicSeries.html">harmonic
+                                series</a>. The short answer is that simply by moving your device further away from the
+                            instrument you're playing on will reduce false positives.</p>
+                        <br>
+                        <p><b>When I sustain a note why does my digital audio workstation not reflect the length of time
+                                I played it?</b></p>
+                        <p>One of the software libraries we rely on is in the process of refactoring its MIDI Sequencer
+                            which is required to send MIDI events according to a synchronized time. A future update will
+                            include sending true real-time MIDI events.</p>
+                        <br>
+                        <p><b>Is connection from my device to my computer over Bluetooth coming?</b></p>
+                        <p>Yes.</p>
+                        <br>
+                        <p><b>Can I just upload some audio to my phone and export it as MIDI?</b></p>
+                        <p>Of course, there shouldn't be a limitation on using this app only in real-time. This is
+                            slated for a future release.</p>
+                        <br>
+                        <p><b>Why is the app download size so large?</b></p>
+                        <p>We strive to not have a need for internet connectivity in the app. We will package the neural
+                            network(s) in the app bundle for as long as we can get away with it according to App Store
+                            and Play Store app size policies.</p>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="privacy">
+                        <p>
+                            We don't collect any data whatsoever and the app does not require an internet connection to
+                            use.
+                        </p>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="contact">
+                        <p>For any technical issues, please <a
+                                href="https://docs.github.com/en/issues/tracking-your-work-with-issues/quickstart">raise
+                                an issue</a> on our <a href="https://github.com/nnethery/MakeItMIDI-iOS">GitHub repository</a> and a
+                            contributor will assist.</p>
+                        <p> For all other inquiries, please contact Noah at
+                            <script type="text/javascript" language="javascript">
+                                // <!-
+                                // Email obfuscator script 2.1 by Tim Williams, University of Arizona
+                                // Random encryption key feature by Andrew Moulden, Site Engineering Ltd
+                                // This code is freeware provided these four comment lines remain intact
+                                // A wizard to generate this code is at http://www.jottings.com/obfuscator/
+                                {
+                                    coded = "ZmHk@ZL3kL8n.pL6"
+                                    key = "aI1sq2MRVTPrcDY9Hvb0QFoXh7d8KyAtC6EiUjmekwplSnB3fOu4zJGL5gWNxZ"
+                                    shift = coded.length
+                                    link = ""
+                                    for (i = 0; i < coded.length; i++) {
+                                        if (key.indexOf(coded.charAt(i)) == -1) {
+                                            ltr = coded.charAt(i)
+                                            link += (ltr)
+                                        }
+                                        else {
+                                            ltr = (key.indexOf(coded.charAt(i)) - shift + key.length) % key.length
+                                            link += (key.charAt(ltr))
+                                        }
+                                    }
+                                    document.write("<a href='mailto:" + link + "'>noah@nethery.dev</a>")
+                                }
+                            //-->
+                            </script><noscript><i>Sorry, you need Javascript on to see my email
+                                    address.</i></noscript>.
+                        </p>
+                    </div>
+                </div><!--//feature-content-->
+
+
+            </div><!--//tabbed-area-->
+
+        </div><!--//container-->
+    </div><!--//features-->
+
+    <footer class="footer text-center">
+        <div class="container">
+            <!--/* This template is free as long as you keep the footer attribution link. If you'd like to use the template without the attribution link, you can buy the commercial license via our website: themes.3rdwavemedia.com Thank you for your support. :) */-->
+            <small class="copyright">Designed with <span class="sr-only">love</span><i class="fa-solid fa-heart"></i> by
+                <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers</small>
+
+
+        </div><!--//container-->
+    </footer>
+
+    <!-- Javascript -->
+    <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <!-- <script src="assets/plugins/gumshoe/gumshoe.polyfills.min.js"></script> -->
+    <script src="assets/js/main.js"></script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+</body>
