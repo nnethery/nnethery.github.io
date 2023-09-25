@@ -85,7 +85,8 @@ function checkInteractions() {
     xhr.onload = function() {
         if (xhr.status >= 200 && xhr.status < 400) {
             // Success! Parse the response and display it
-            const response = JSON.parse(xhr.responseText);
+            const response = xhr.responseText;
+            console.log(response);
             output.innerHTML = response;
         } else {
             // Error occurred
