@@ -11,23 +11,26 @@
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <style>
+    /* Lock vertical scrolling */
     body {
       font-family: 'Roboto', sans-serif;
       background-color: #f7f7f7;
       margin: 0;
       padding: 0;
+      overflow: hidden;
     }
-    /* Full-height container for game */
+    /* Main game container with safe area padding for iOS */
     #gameContainer {
       display: flex;
       flex-direction: column;
       height: 100vh;
       padding: 0;
-      position: relative; /* For absolute positioning of result banner */
+      position: relative;
+      padding-bottom: env(safe-area-inset-bottom, 20px);
     }
-    /* Timeline container occupies available vertical space */
+    /* Timeline container takes 75% of viewport height */
     #timeline {
-      flex: 1;
+      height: 75vh;
       display: flex;
       overflow-x: auto;
       white-space: nowrap;
@@ -42,7 +45,7 @@
       cursor: pointer;
       border: 2px solid transparent;
       border-radius: 4px;
-      height: 100%; /* Images fill the timeline's height */
+      height: 100%;
     }
     .timeline-image.selected {
       border-color: #007bff;
@@ -62,9 +65,10 @@
       color: #888;
       pointer-events: none;
     }
-    /* Bottom button row */
+    /* Bottom button row with extra padding for safe area */
     .button-row {
       padding: 1rem;
+      padding-bottom: calc(1rem + env(safe-area-inset-bottom, 20px));
       background-color: #fff;
       box-shadow: 0 -1px 3px rgba(0,0,0,0.1);
       display: flex;
@@ -75,19 +79,6 @@
       padding: 0.5rem 1.5rem;
       font-weight: 500;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    /* Modal custom styling */
-    .modal-content {
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-    /* Centered loading spinner */
-    #loading {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #f7f7f7;
     }
     /* Floating result banner with solid background */
     #result {
@@ -108,6 +99,19 @@
     }
     .result-incorrect {
       background-color: #dc3545; /* Solid red */
+    }
+    /* Modal custom styling */
+    .modal-content {
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    /* Centered loading spinner */
+    #loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f7f7f7;
     }
   </style>
 </head>
