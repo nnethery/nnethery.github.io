@@ -3,80 +3,171 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chrono Image Game</title>
+  <title>Flashback</title>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <!-- Bootstrap 5 CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <style>
-    /* Timeline styles */
-    .timeline {
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f7f7f7;
+      margin: 0;
+      padding: 0;
+    }
+    /* Full-height container for game */
+    #gameContainer {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 0;
+      position: relative; /* For absolute positioning of result banner */
+    }
+    /* Timeline container occupies available vertical space */
+    #timeline {
+      flex: 1;
       display: flex;
       overflow-x: auto;
       white-space: nowrap;
-      padding: 10px;
-      border: 1px solid #ccc;
-      margin-bottom: 15px;
+      position: relative;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .timeline-image {
       flex: 0 0 auto;
-      margin-right: 10px;
+      margin: 0 5px;
       cursor: pointer;
       border: 2px solid transparent;
+      border-radius: 4px;
+      height: 100%; /* Images fill the timeline's height */
     }
     .timeline-image.selected {
       border-color: #007bff;
     }
     .timeline-image img {
-      max-height: 150px;
+      height: 100%;
       display: block;
+      border-radius: 4px;
+    }
+    /* Swipe indicator overlay */
+    .swipe-indicator {
+      position: absolute;
+      bottom: 5px;
+      width: 100%;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #888;
+      pointer-events: none;
+    }
+    /* Bottom button row */
+    .button-row {
+      padding: 1rem;
+      background-color: #fff;
+      box-shadow: 0 -1px 3px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+    }
+    .btn-custom {
+      border-radius: 20px;
+      padding: 0.5rem 1.5rem;
+      font-weight: 500;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    /* Modal custom styling */
+    .modal-content {
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    /* Centered loading spinner */
+    #loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f7f7f7;
+    }
+    /* Floating result banner with solid background */
+    #result {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.25rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #fff;
+    }
+    .result-win {
+      background-color: #28a745; /* Solid green */
+    }
+    .result-incorrect {
+      background-color: #dc3545; /* Solid red */
     }
   </style>
 </head>
 <body>
   <!-- Loading indicator -->
-  <div
-    id="loading"
-    class="d-flex justify-content-center align-items-center"
-    style="height: 100vh;"
-  >
+  <div id="loading">
     <div class="spinner-border" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
 
-  <!-- Game container -->
-  <div id="gameContainer" class="container" style="display: none;">
-    <h1 class="mt-3">Chrono Image Game</h1>
-    <div id="result" class="alert" style="display: none;"></div>
-    <div id="timeline" class="timeline"></div>
-    <div class="mb-3">
-      <button type="button" id="swapBtn" class="btn btn-primary" disabled>
-        Swap
-      </button>
-      <button type="button" id="submitBtn" class="btn btn-success">
-        Submit
-      </button>
-      <button type="button" id="resetBtn" class="btn btn-secondary">
-        Reset
-      </button>
+  <!-- Main Game Container -->
+  <div id="gameContainer" style="display: none;">
+    <!-- Floating Result Banner -->
+    <div id="result"></div>
+    <!-- Timeline container -->
+    <div id="timeline">
+      <!-- Swipe indicator overlay -->
+      <div class="swipe-indicator">Swipe left or right</div>
+    </div>
+    <!-- Bottom Button Row -->
+    <div class="button-row">
+      <button type="button" id="swapBtn" class="btn btn-primary btn-custom" disabled>Swap</button>
+      <button type="button" id="submitBtn" class="btn btn-success btn-custom ms-2">Submit</button>
+      <div class="ms-auto">
+        <i class="bi bi-question-circle instructions-icon fs-3 text-primary" data-bs-toggle="modal" data-bs-target="#instructionsModal" style="cursor:pointer;"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Instructions Modal -->
+  <div class="modal fade" id="instructionsModal" tabindex="-1" aria-labelledby="instructionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="instructionsModalLabel">How to Play</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Arrange the photos in chronological order based on when they were taken.</p>
+          <p>Tap two photos to select them, then tap the <strong>Swap</strong> button to switch their positions.</p>
+          <p>Once you believe the timeline is correct, tap the <strong>Submit</strong> button.</p>
+          <p>If the order is correct, you'll see a "You Win!" message; otherwise, you'll get an "Incorrect" message.</p>
+          <p>Swipe left or right to view all the photos.</p>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- jQuery, Bootstrap JS Bundle, and Exif.js -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.min.js"></script>
   <script>
     $(document).ready(function () {
       // *** CONFIGURATION: update these to match your public S3 bucket ***
       var S3_BUCKET = "vday";
-    var S3_PREFIX = "images/";
-    var S3_BASE_URL = "https://s3.nethery.dev/vday/"; 
-    var bucketListUrl = S3_BASE_URL + "?list-type=2&prefix=" + S3_PREFIX;
+      var S3_PREFIX = "images/";
+      var S3_BASE_URL = "https://s3.nethery.dev/vday/";
+      var bucketListUrl = S3_BASE_URL + "?list-type=2&prefix=" + S3_PREFIX;
 
       // --- Game Variables ---
       var imagesData = []; // objects: { key, url, dateTaken }
@@ -97,6 +188,8 @@
       function renderTimeline() {
         var timelineDiv = $("#timeline");
         timelineDiv.empty();
+        // Append swipe indicator as overlay
+        timelineDiv.append('<div class="swipe-indicator">Swipe left or right</div>');
         currentOrder.forEach(function (key, index) {
           var imgObj = imagesData.find((obj) => obj.key === key);
           var imgElem = $("<img>")
@@ -139,28 +232,25 @@
         }
       });
 
-      // Check the order on Submit button click
+      // Check the order on Submit button click and show floating banner for 3 seconds
       $("#submitBtn").click(function () {
+        var message = "";
+        var resultClass = "";
         if (JSON.stringify(currentOrder) === JSON.stringify(correctOrder)) {
-          $("#result")
-            .removeClass("alert-danger")
-            .addClass("alert-info")
-            .text("You Win!")
-            .show();
+          message = "You Win!";
+          resultClass = "result-win";
         } else {
-          $("#result")
-            .removeClass("alert-info")
-            .addClass("alert-danger")
-            .text("Incorrect")
-            .show();
+          message = "Incorrect";
+          resultClass = "result-incorrect";
         }
-      });
-
-      // Reset the game: reshuffle the images
-      $("#resetBtn").click(function () {
-        $("#result").hide();
-        currentOrder = shuffle([...correctOrder]); // shuffle a copy of correctOrder
-        renderTimeline();
+        $("#result")
+          .removeClass("result-win result-incorrect")
+          .addClass(resultClass)
+          .text(message)
+          .fadeIn();
+        setTimeout(function () {
+          $("#result").fadeOut();
+        }, 3000);
       });
 
       // Process an image to extract its EXIF date
@@ -168,15 +258,21 @@
         var img = new Image();
         img.crossOrigin = "Anonymous";
         img.onload = function () {
-          EXIF.getData(img, function () {
-            var dt =
-              EXIF.getTag(this, "DateTimeOriginal") ||
-              EXIF.getTag(this, "DateTime") ||
-              "9999:12:31 23:59:59";
-            callback({ key: key, url: url, dateTaken: dt });
-          });
+          try {
+            EXIF.getData(img, function () {
+              var dt =
+                EXIF.getTag(this, "DateTimeOriginal") ||
+                EXIF.getTag(this, "DateTime") ||
+                "9999:12:31 23:59:59";
+              callback({ key: key, url: url, dateTaken: dt });
+            });
+          } catch (e) {
+            console.error("Error extracting EXIF from", key, e);
+            callback({ key: key, url: url, dateTaken: "9999:12:31 23:59:59" });
+          }
         };
         img.onerror = function () {
+          console.error("Error loading image", key);
           callback({ key: key, url: url, dateTaken: "9999:12:31 23:59:59" });
         };
         img.src = url;
@@ -201,7 +297,8 @@
               }
             });
           if (keys.length === 0) {
-            $("#loading").html("<p>No images found in bucket.</p>");
+            document.getElementById("loading").style.setProperty("display", "none", "important");
+            $("#gameContainer").html("<p>No images found in bucket.</p>").show();
             return;
           }
           var processedCount = 0;
@@ -221,14 +318,14 @@
                 // Randomize the initial game order
                 currentOrder = shuffle([...correctOrder]);
                 renderTimeline();
-                $("#loading").hide();
-                $("#gameContainer").show();
+                document.getElementById("loading").style.setProperty("display", "none", "important");
+                document.getElementById("gameContainer").style.setProperty("display", "flex", "important");
               }
             });
           });
         },
         error: function () {
-          $("#loading").html("<p>Error loading images from S3 bucket.</p>");
+          document.getElementById("loading").innerHTML = "<p>Error loading images from S3 bucket.</p>";
         },
       });
     });
