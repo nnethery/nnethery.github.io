@@ -1,0 +1,54 @@
+/* Ulrich's speech */
+code {
+	font-family: Consolas, monospace;
+}
+
+p {
+  /* This prevents the aum symbol from rendering too tall, so rows stay flush */
+  line-height: 1.2em;
+}
+
+blockquote {
+  border-left: 2px solid gray;
+  margin-left: 0;
+  margin-right: 0;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  padding-left: 1em;
+
+  /* try to avoid having the border start on one page with no text */
+  break-before: avoid;
+  break-after: avoid;
+}
+
+blockquote > *:first-child {
+  margin-top: 0;
+}
+
+blockquote > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Typical content of a section break is "*" */
+.section-break {
+  text-align: center;
+  margin: 3em 0;
+  break-before: avoid;
+  break-inside: avoid; /* for tombstones in "Immemorial" */
+  break-after: avoid;
+}
+
+h1 {
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 3em;
+}
+
+h3 {
+  margin-top: 0;
+  margin-bottom: 4.5em;
+}
