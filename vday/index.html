@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Topology Gradient Mapper (Google Maps API)</title>
+    <title>Topology Gradient Mapper (Google Maps API - GET, Explicit Redirect)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
@@ -34,10 +34,6 @@
 
     <div class="bg-white p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-2xl">
         <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6">Topology Gradient Mapper</h1>
-        <!-- <p class="text-xs text-center text-orange-600 mb-4">
-            <strong>Important:</strong> This tool uses Google Maps APIs. Ensure your API key is properly restricted in the Google Cloud Console to prevent misuse.
-        </p> -->
-
         <div class="space-y-4 mb-6">
             <div>
                 <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Street Address:</label>
@@ -72,11 +68,11 @@
 
     <script>
         // --- Configuration ---
-        const GOOGLE_MAPS_API_KEY = "AIzaSyDM6-JwBW9c3E-udm-oUl9XRWGaRWbcc-w"; // Updated to the key user said was configured
-        const NUM_POINTS_SIDE = 25; // Grid density (25x25 = 625 points)
+        const Maps_API_KEY = "AIzaSyDM6-JwBW9c3E-udm-oUl9XRWGaRWbcc-w"; // Your current working API KEY
+        const NUM_POINTS_SIDE = 25; 
         const ACRE_TO_SQ_METERS = 4046.86;
-        const GOOGLE_ELEVATION_POINTS_LIMIT = 500; // Max points per Google Elevation API request (conservative)
-        const REQUEST_TIMEOUT_MS = 30000; // 30 seconds for API calls
+        const GOOGLE_ELEVATION_POINTS_LIMIT = 300; // Reduced limit for GET requests
+        const REQUEST_TIMEOUT_MS = 30000; 
 
         let map = null;
         let heatLayer = null;
@@ -121,11 +117,14 @@
 
         async function geocodeAddressWithGoogle(addressStr) {
             showMessage("Geocoding address with Google...", false);
-            const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(addressStr)}&key=${GOOGLE_MAPS_API_KEY}`;
+            const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(addressStr)}&key=${Maps_API_KEY}`;
             try {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-                const response = await fetch(url, { signal: controller.signal });
+                const response = await fetch(url, { 
+                    signal: controller.signal,
+                    redirect: 'follow' // Explicitly follow redirects
+                });
                 clearTimeout(timeoutId);
 
                 const data = await response.json();
@@ -146,7 +145,6 @@
         }
         
         function getGridPointsAndSteps(centerLat, centerLon, acres, numPointsSide) {
-            // This function remains largely the same as before
             const areaSqMeters = acres * ACRE_TO_SQ_METERS;
             const sideLengthMeters = Math.sqrt(areaSqMeters);
             const halfSideMeters = sideLengthMeters / 2.0;
@@ -154,8 +152,7 @@
             const mPerDegLon = mPerDegLat * Math.cos(centerLat * Math.PI / 180);
 
             if (mPerDegLon === 0) {
-                showMessage("Cannot calculate longitude span at the poles.", true);
-                return null;
+                showMessage("Cannot calculate longitude span at the poles.", true); return null;
             }
 
             const deltaLatDeg = halfSideMeters / mPerDegLat;
@@ -175,16 +172,12 @@
                 latPoints.push(minLat + i * latStep);
                 lonPoints.push(minLon + i * lonStep);
             }
-            if (numPointsSide === 1) { // Should not happen with NUM_POINTS_SIDE = 25
-                latPoints[0] = centerLat;
-                lonPoints[0] = centerLon;
-            }
+            if (numPointsSide === 1) { latPoints[0] = centerLat; lonPoints[0] = centerLon; }
             
-            const gridPointsForApi = []; // This will be [{latitude: y, longitude: x}, ...]
+            const gridPointsForApi = []; 
             latPoints.forEach(latVal => {
                 lonPoints.forEach(lonVal => {
-                    // For Google Elevation API, points are lat,lng strings
-                    gridPointsForApi.push({ latitude: parseFloat(latVal.toFixed(6)), longitude: parseFloat(lonVal.toFixed(6)) });
+                    gridPointsForApi.push({ lat: parseFloat(latVal.toFixed(6)), lng: parseFloat(lonVal.toFixed(6)) });
                 });
             });
             
@@ -197,9 +190,9 @@
             return { gridPointsForApi, latSpacingMeters, lonSpacingMeters, boundingBoxCoords };
         }
 
-        async function getElevationsWithGoogle(pointsForApi) {
+        async function getElevationsWithGoogle(pointsForApi) { 
             if (!pointsForApi || pointsForApi.length === 0) return [];
-            showMessage(`Querying Google Elevation API for ${pointsForApi.length} points... (may require multiple batches)`, false);
+            showMessage(`Querying Google Elevation API for ${pointsForApi.length} points via GET... (may require multiple batches)`, false);
             
             let allElevations = [];
             const numBatches = Math.ceil(pointsForApi.length / GOOGLE_ELEVATION_POINTS_LIMIT);
@@ -207,39 +200,42 @@
             for (let i = 0; i < numBatches; i++) {
                 const batchStart = i * GOOGLE_ELEVATION_POINTS_LIMIT;
                 const batchEnd = batchStart + GOOGLE_ELEVATION_POINTS_LIMIT;
-                const batchPoints = pointsForApi.slice(batchStart, batchEnd);
+                const batchPointsObjects = pointsForApi.slice(batchStart, batchEnd);
                 
-                // Format for Google API: "lat1,lng1|lat2,lng2|..."
-                const locationsParam = batchPoints.map(p => `${p.latitude},${p.longitude}`).join('|');
-                const url = `https://maps.googleapis.com/maps/api/elevation/json?locations=${locationsParam}&key=${GOOGLE_MAPS_API_KEY}`;
-                
-                showMessage(`Fetching elevation batch ${i+1} of ${numBatches}...`, false);
+                const locationsParamString = batchPointsObjects.map(p => `${p.lat},${p.lng}`).join('|');
+                const url = `https://maps.googleapis.com/maps/api/elevation/json?locations=${locationsParamString}&key=${Maps_API_KEY}`;
+                                
+                showMessage(`Fetching elevation batch ${i+1} of ${numBatches} via GET... (URL length: ${url.length})`, false);
+                console.log("Requesting Elevation URL (GET):", url);
 
                 try {
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-                    const response = await fetch(url, { signal: controller.signal });
+                    const response = await fetch(url, { 
+                        method: 'GET',
+                        signal: controller.signal,
+                        redirect: 'follow' // Explicitly follow redirects
+                    });
                     clearTimeout(timeoutId);
 
                     const data = await response.json();
-                    console.log(`Google Elevation API Response (Batch ${i+1}):`, JSON.stringify(data, null, 2));
+                    console.log(`Google Elevation API Response (Batch ${i+1} GET):`, JSON.stringify(data, null, 2));
 
                     if (data.status === "OK" && data.results) {
                         const elevationsFromBatch = data.results.map(result => result.elevation);
                         allElevations.push(...elevationsFromBatch);
                     } else {
-                         throw new Error(`Google Elevation API Error (Batch ${i+1}): ${data.status}. ${data.error_message || ''}`);
+                         throw new Error(`Google Elevation API Error (Batch ${i+1} GET): ${data.status}. ${data.error_message || ''}`);
                     }
                 } catch (error) {
-                    console.error("Google Elevation API error:", error); // This will log the "TypeError: Failed to fetch"
-                    let errMsg = `Elevation fetching error (Batch ${i+1}): ${error.message}`; // error.message will be "Failed to fetch"
-                    if (error.name === 'AbortError') errMsg = `Elevation request (Batch ${i+1}) timed out.`;
+                    console.error("Google Elevation API error (GET):", error); 
+                    let errMsg = `Elevation fetching error (Batch ${i+1} GET): ${error.message}`; 
+                    if (error.name === 'AbortError') errMsg = `Elevation request (Batch ${i+1} GET) timed out.`;
                     showMessage(errMsg, true);
-                    return null; // Abort all if one batch fails
+                    return null; 
                 }
             }
             
-            // Post-processing (check for uniform, missing values - though Google usually provides data or fails)
             if (allElevations.length > 0) {
                 const validElevs = allElevations.filter(e => e !== null && e !== undefined && !isNaN(e));
                 const allSame = validElevs.length > 0 && validElevs.every(e => e === validElevs[0]);
@@ -251,19 +247,20 @@
                 } else if (!lastMessageIsUniformElevationWarning) {
                      showMessage(`Elevations received for ${allElevations.length} points from Google.`, false);
                 }
-            } else if (!lastMessageIsUniformElevationWarning) {
+            } else if (!lastMessageIsUniformElevationWarning && allElevations.length === pointsForApi.length) {
                  showMessage(`Elevations received for ${allElevations.length} points from Google.`, false);
+            } else if (!lastMessageIsUniformElevationWarning && allElevations.length !== pointsForApi.length) {
+                 showMessage(`Partial or no elevation data received. Expected ${pointsForApi.length}, got ${allElevations.length}. Check console.`, true);
             }
             return allElevations;
         }
 
         function calculateGradientMagnitudes(elevationList, numPointsSide, latSpacingMeters, lonSpacingMeters) {
-            // This function remains the same as before
              if (!elevationList || elevationList.length !== numPointsSide * numPointsSide) {
                 showMessage("Invalid elevation list or mismatch for gradient calculation.", true);
                 return null;
             }
-            if (latSpacingMeters <= 0 || lonSpacingMeters <= 0) { // Should not happen if numPointsSide >= 2
+            if (latSpacingMeters <= 0 || lonSpacingMeters <= 0) {
                 showMessage("Point spacing must be positive for gradient calculation.", true);
                 return null;
             }
@@ -279,7 +276,6 @@
             const gradLat = Array(numPointsSide).fill(null).map(() => Array(numPointsSide).fill(0));
             const gradLon = Array(numPointsSide).fill(null).map(() => Array(numPointsSide).fill(0));
 
-            // Central differences for interior points
             for (let i = 1; i < numPointsSide - 1; i++) {
                 for (let j = 1; j < numPointsSide - 1; j++) {
                     gradLat[i][j] = (elevationGrid[i+1][j] - elevationGrid[i-1][j]) / (2 * latSpacingMeters);
@@ -287,42 +283,28 @@
                 }
             }
 
-            // Forward/backward differences for edges and corners
             for (let k = 0; k < numPointsSide; k++) {
-                // Top edge (i=0)
                 if (k > 0 && k < numPointsSide - 1) { 
                     gradLon[0][k] = (elevationGrid[0][k+1] - elevationGrid[0][k-1]) / (2 * lonSpacingMeters);
-                } else if (k === 0) { // Top-left
+                    gradLon[numPointsSide-1][k] = (elevationGrid[numPointsSide-1][k+1] - elevationGrid[numPointsSide-1][k-1]) / (2 * lonSpacingMeters);
+                } else if (k === 0) { 
                     gradLon[0][k] = numPointsSide > 1 ? (elevationGrid[0][k+1] - elevationGrid[0][k]) / lonSpacingMeters : 0;
-                } else { // Top-right (k = numPointsSide - 1)
-                    gradLon[0][k] = numPointsSide > 1 ? (elevationGrid[0][k] - elevationGrid[0][k-1]) / lonSpacingMeters : 0;
-                }
-                gradLat[0][k] = numPointsSide > 1 ? (elevationGrid[1][k] - elevationGrid[0][k]) / latSpacingMeters : 0;
-
-                // Bottom edge (i = numPointsSide - 1)
-                if (k > 0 && k < numPointsSide - 1) { 
-                     gradLon[numPointsSide-1][k] = (elevationGrid[numPointsSide-1][k+1] - elevationGrid[numPointsSide-1][k-1]) / (2 * lonSpacingMeters);
-                } else if (k === 0) { // Bottom-left
                     gradLon[numPointsSide-1][k] = numPointsSide > 1 ? (elevationGrid[numPointsSide-1][k+1] - elevationGrid[numPointsSide-1][k]) / lonSpacingMeters : 0;
-                } else { // Bottom-right
+                } else { 
+                    gradLon[0][k] = numPointsSide > 1 ? (elevationGrid[0][k] - elevationGrid[0][k-1]) / lonSpacingMeters : 0;
                     gradLon[numPointsSide-1][k] = numPointsSide > 1 ? (elevationGrid[numPointsSide-1][k] - elevationGrid[numPointsSide-1][k-1]) / lonSpacingMeters : 0;
                 }
+                gradLat[0][k] = numPointsSide > 1 ? (elevationGrid[1][k] - elevationGrid[0][k]) / latSpacingMeters : 0;
                 gradLat[numPointsSide-1][k] = numPointsSide > 1 ? (elevationGrid[numPointsSide-1][k] - elevationGrid[numPointsSide-2][k]) / latSpacingMeters : 0;
                 
-                // Left edge (j=0), excluding already calculated top/bottom corners
                 if (k > 0 && k < numPointsSide - 1) {
                     gradLat[k][0] = (elevationGrid[k+1][0] - elevationGrid[k-1][0]) / (2 * latSpacingMeters); 
                     gradLon[k][0] = numPointsSide > 1 ? (elevationGrid[k][1] - elevationGrid[k][0]) / lonSpacingMeters : 0;
-                }
-                // Right edge (j = numPointsSide - 1), excluding already calculated top/bottom corners
-                if (k > 0 && k < numPointsSide - 1) {
                     gradLat[k][numPointsSide-1] = (elevationGrid[k+1][numPointsSide-1] - elevationGrid[k-1][numPointsSide-1]) / (2 * latSpacingMeters);
                     gradLon[k][numPointsSide-1] = numPointsSide > 1 ? (elevationGrid[k][numPointsSide-1] - elevationGrid[k][numPointsSide-2]) / lonSpacingMeters : 0;
                 }
             }
-            if (numPointsSide === 1) { // Should not happen
-                gradLat[0][0] = 0; gradLon[0][0] = 0;
-            }
+            if (numPointsSide === 1) { gradLat[0][0] = 0; gradLon[0][0] = 0; }
             
             const gradientMagnitudes = [];
             for (let i = 0; i < numPointsSide; i++) {
@@ -337,7 +319,6 @@
         }
 
         function createOrUpdateTopologyMap(centerLat, centerLon, gridPointsForApi, valuesForHeatmap, propertyMarkerCoords, acresBoundsCoords, inputAcres) {
-            // This function remains largely the same
             mapContainer.classList.remove('hidden');
             
             if (!map) {
@@ -346,9 +327,7 @@
                     maxZoom: 19,
                     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(map);
-            } else {
-                map.setView([centerLat, centerLon]);
-            }
+            } else { map.setView([centerLat, centerLon]); }
 
             if (heatLayer) map.removeLayer(heatLayer);
             if (propertyMarker) map.removeLayer(propertyMarker);
@@ -358,7 +337,7 @@
             if (valuesForHeatmap && valuesForHeatmap.length > 0 && gridPointsForApi.length === valuesForHeatmap.length) {
                 for (let i = 0; i < gridPointsForApi.length; i++) {
                     if (valuesForHeatmap[i] !== null && valuesForHeatmap[i] !== undefined && isFinite(valuesForHeatmap[i])) {
-                        heatmapData.push([gridPointsForApi[i].latitude, gridPointsForApi[i].longitude, valuesForHeatmap[i]]);
+                        heatmapData.push([gridPointsForApi[i].lat, gridPointsForApi[i].lng, valuesForHeatmap[i]]);
                     }
                 }
             }
@@ -405,19 +384,11 @@
             const addressStr = addressInput.value.trim();
             const acresStr = acresInput.value.trim();
 
-            if (!addressStr) {
-                showMessage("Please enter a street address.", true); return;
-            }
-            if (!acresStr) {
-                showMessage("Please enter the number of acres.", true); return;
-            }
+            if (!addressStr) { showMessage("Please enter a street address.", true); return; }
+            if (!acresStr) { showMessage("Please enter the number of acres.", true); return; }
             const acresVal = parseFloat(acresStr);
-            if (isNaN(acresVal) || acresVal <= 0) {
-                showMessage("Acres must be a positive number.", true); return;
-            }
-             if (NUM_POINTS_SIDE < 2) { 
-                showMessage("Configuration error: NUM_POINTS_SIDE must be at least 2.", true); return;
-            }
+            if (isNaN(acresVal) || acresVal <= 0) { showMessage("Acres must be a positive number.", true); return; }
+            if (NUM_POINTS_SIDE < 2) { showMessage("Configuration error: NUM_POINTS_SIDE must be at least 2.", true); return; }
 
             setLoadingState(true);
             messageArea.textContent = ''; 
@@ -425,25 +396,27 @@
             try {
                 const propertyCoords = await geocodeAddressWithGoogle(addressStr);
                 if (!propertyCoords) { setLoadingState(false); return; }
-
-                console.log("Geocoded Property Coords:", propertyCoords); // Added console log
+                console.log("Geocoded Property Coords:", propertyCoords);
 
                 const gridData = getGridPointsAndSteps(propertyCoords.latitude, propertyCoords.longitude, acresVal, NUM_POINTS_SIDE);
                 if (!gridData) { setLoadingState(false); return; }
                 const { gridPointsForApi, latSpacingMeters, lonSpacingMeters, boundingBoxCoords } = gridData;
-
+                
                 const elevationValues = await getElevationsWithGoogle(gridPointsForApi);
-                console.log("Processed Elevation Values (Google):", elevationValues);
+                console.log("Processed Elevation Values (Google GET):", elevationValues);
 
                 if (!elevationValues || elevationValues.length !== gridPointsForApi.length) {
                     setLoadingState(false);
-                    if (!elevationValues && !lastMessageIsUniformElevationWarning) showMessage("Failed to retrieve complete elevation data from Google.", true);
-                    else if (!lastMessageIsUniformElevationWarning) showMessage("Mismatch in expected elevation data points from Google.", true);
+                    if (!lastMessageIsUniformElevationWarning && !elevationValues) {
+                        // Error message already shown by getElevationsWithGoogle
+                    } else if (!lastMessageIsUniformElevationWarning) {
+                         showMessage("Mismatch or incomplete elevation data received from Google GET.", true);
+                    }
                     return;
                 }
                 
                 const gradientMagnitudes = calculateGradientMagnitudes(elevationValues, NUM_POINTS_SIDE, latSpacingMeters, lonSpacingMeters);
-                console.log("Calculated Gradient Magnitudes (Google):", gradientMagnitudes);
+                console.log("Calculated Gradient Magnitudes (Google GET):", gradientMagnitudes);
 
                 if (!gradientMagnitudes) {
                     if (!lastMessageIsUniformElevationWarning) {
