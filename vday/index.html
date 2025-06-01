@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Topology Gradient Mapper (Google Maps API - GET, Explicit Redirect)</title>
+    <title>Topology Gradient Mapper (Google Maps JavaScript SDK with Contours)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
@@ -11,7 +11,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin=""></script>
-    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         #map { height: 500px; width: 100%; border-radius: 0.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -28,12 +28,63 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .legend {
+            padding: 6px 10px; 
+            font: 12px/1.5 Arial, Helvetica, sans-serif;
+            background: white;
+            background: rgba(255,255,255,0.9); 
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            line-height: 18px;
+            color: #333; 
+            max-height: 200px; 
+            overflow-y: auto; 
+        }
+        .legend h4 {
+            margin-top: 0;
+            margin-bottom: 8px; 
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            border: 1px solid #ccc; 
+        }
+        .contour-label {
+            font-size: 9px;
+            font-weight: bold;
+            color: #222; 
+            text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF, 0 0 3px #FFF; 
+        }
+        .leaflet-tooltip-pane .contour-label { 
+            z-index: 650; 
+        }
+        .spot-elevation-label {
+            background-color: rgba(255, 255, 255, 0.75); 
+            border: 1px solid #bbb;
+            border-radius: 3px;
+            padding: 2px 4px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #222;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .hypsometric-cell {
+            stroke: false; /* No border for the elevation cells */
+        }
     </style>
+    <script defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDM6-JwBW9c3E-udm-oUl9XRWGaRWbcc-w&callback=initMapApp&libraries=core,maps,marker,elevation,geocoding">
+    </script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
 
     <div class="bg-white p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-2xl">
-        <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6">Topology Gradient Mapper</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-6">Topographic Mapper</h1>
         <div class="space-y-4 mb-6">
             <div>
                 <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Street Address:</label>
@@ -50,8 +101,8 @@
         <button id="processButton"
                 class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-md shadow-md
                        transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50
-                       flex items-center justify-center">
-            <span id="buttonText">Visualize Gradient</span>
+                       flex items-center justify-center" disabled> 
+            <span id="buttonText">Visualize Topography</span>
             <div id="spinner" class="spinner ml-3 hidden"></div>
         </button>
 
@@ -63,23 +114,35 @@
     </div>
 
     <footer class="text-center text-gray-500 mt-8 text-xs">
-        <p>Uses Google Geocoding & Elevation APIs. Map by Leaflet.</p>
+        <p>Uses Google Maps JavaScript API, D3.js. Map by Leaflet.</p>
     </footer>
 
     <script>
         // --- Configuration ---
-        const Maps_API_KEY = "AIzaSyDM6-JwBW9c3E-udm-oUl9XRWGaRWbcc-w"; // Your current working API KEY
-        const NUM_POINTS_SIDE = 25; 
+        const NUM_POINTS_SIDE = 35; 
         const ACRE_TO_SQ_METERS = 4046.86;
-        const GOOGLE_ELEVATION_POINTS_LIMIT = 300; // Reduced limit for GET requests
-        const REQUEST_TIMEOUT_MS = 30000; 
+        const GOOGLE_ELEVATION_POINTS_LIMIT = 300; 
+        const CONTOUR_INTERVAL_METERS = 1; 
+        const METERS_TO_FEET = 3.28084;
+        const NUM_SPOT_ELEVATIONS_SIDE = 4; 
+        const CONTOUR_SMOOTH_FACTOR = 3.0; 
+        const CONTOUR_LINE_WEIGHT = 1.2; 
+        const HYPSO_NUM_BANDS = 7; 
+        const HYPSO_CELL_OPACITY = 0.55; 
 
         let map = null;
-        let heatLayer = null;
         let propertyMarker = null;
         let boundsRectangle = null;
+        let legendControl = null;
+        let contourLayerGroup = null; 
+        let spotElevationLayerGroup = null; 
+        let hypsometricCellLayerGroup = null; 
         let lastMessageIsUniformElevationWarning = false;
 
+        let geocoderService = null;
+        let elevationService = null;
+
+        // DOM Elements
         const addressInput = document.getElementById('address');
         const acresInput = document.getElementById('acres');
         const processButton = document.getElementById('processButton');
@@ -88,8 +151,20 @@
         const messageArea = document.getElementById('messageArea');
         const mapContainer = document.getElementById('mapContainer');
 
+        // Initialize Google Maps Services
+        function initMapApp() {
+            console.log("Google Maps API loaded.");
+            geocoderService = new google.maps.Geocoder();
+            elevationService = new google.maps.ElevationService();
+            processButton.disabled = false; 
+            showMessage("Google Maps API ready. Enter address and acres.", false);
+        }
+        window.initMapApp = initMapApp;
+
+        // Event Listener
         processButton.addEventListener('click', handleProcessRequest);
 
+        // UI Helper Functions
         function showMessage(text, isError = false, isWarning = false) {
             messageArea.textContent = text;
             let textColor = 'text-green-600';
@@ -107,41 +182,37 @@
                 acresInput.disabled = true;
                 lastMessageIsUniformElevationWarning = false;
             } else {
-                buttonText.textContent = 'Visualize Gradient';
+                buttonText.textContent = 'Visualize Topography';
                 spinner.classList.add('hidden');
-                processButton.disabled = false;
+                processButton.disabled = false; 
+                if (!geocoderService || !elevationService) { 
+                    processButton.disabled = true;
+                }
                 addressInput.disabled = false;
                 acresInput.disabled = false;
             }
         }
 
-        async function geocodeAddressWithGoogle(addressStr) {
-            showMessage("Geocoding address with Google...", false);
-            const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(addressStr)}&key=${Maps_API_KEY}`;
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-                const response = await fetch(url, { 
-                    signal: controller.signal,
-                    redirect: 'follow' // Explicitly follow redirects
-                });
-                clearTimeout(timeoutId);
-
-                const data = await response.json();
-                if (data.status === "OK" && data.results && data.results.length > 0) {
-                    const location = data.results[0].geometry.location;
-                    showMessage(`Geocoded: (${location.lat.toFixed(5)}, ${location.lng.toFixed(5)})`, false);
-                    return { latitude: location.lat, longitude: location.lng };
-                } else {
-                    throw new Error(`Google Geocoding API Error: ${data.status}. ${data.error_message || ''}`);
-                }
-            } catch (error) {
-                console.error("Google Geocoding error:", error);
-                let errMsg = `Geocoding error: ${error.message}`;
-                if (error.name === 'AbortError') errMsg = "Geocoding request timed out.";
-                showMessage(errMsg, true);
+        // Geocoding and Data Fetching
+        async function geocodeAddressWithGoogleSDK(addressStr) {
+            showMessage("Geocoding address with Google Maps SDK...", false);
+            if (!geocoderService) {
+                showMessage("Geocoder service not ready. Please wait for Google Maps API to load.", true);
                 return null;
             }
+            return new Promise((resolve, reject) => {
+                geocoderService.geocode({ 'address': addressStr }, (results, status) => {
+                    if (status === 'OK' && results && results[0]) {
+                        const location = results[0].geometry.location;
+                        showMessage(`Geocoded: (${location.lat().toFixed(5)}, ${location.lng().toFixed(5)})`, false);
+                        resolve({ latitude: location.lat(), longitude: location.lng() });
+                    } else {
+                        console.error("Google Geocoding SDK Error:", status, results);
+                        showMessage(`Google Geocoding SDK Error: ${status}`, true);
+                        reject(new Error(`Geocoding failed: ${status}`));
+                    }
+                });
+            });
         }
         
         function getGridPointsAndSteps(centerLat, centerLon, acres, numPointsSide) {
@@ -163,75 +234,71 @@
             const maxLon = centerLon + deltaLonDeg;
             const boundingBoxCoords = [minLat, minLon, maxLat, maxLon];
 
-            const latPoints = [];
-            const lonPoints = [];
+            const latPointsArray = []; 
+            const lonPointsArray = []; 
             const latStep = (numPointsSide > 1) ? (maxLat - minLat) / (numPointsSide - 1) : 0;
             const lonStep = (numPointsSide > 1) ? (maxLon - minLon) / (numPointsSide - 1) : 0;
 
             for (let i = 0; i < numPointsSide; i++) {
-                latPoints.push(minLat + i * latStep);
-                lonPoints.push(minLon + i * lonStep);
+                latPointsArray.push(minLat + i * latStep);
+                lonPointsArray.push(minLon + i * lonStep);
             }
-            if (numPointsSide === 1) { latPoints[0] = centerLat; lonPoints[0] = centerLon; }
+            if (numPointsSide === 1) { latPointsArray[0] = centerLat; lonPointsArray[0] = centerLon; }
             
-            const gridPointsForApi = []; 
-            latPoints.forEach(latVal => {
-                lonPoints.forEach(lonVal => {
-                    gridPointsForApi.push({ lat: parseFloat(latVal.toFixed(6)), lng: parseFloat(lonVal.toFixed(6)) });
-                });
-            });
+            const gridPointsForSDK = []; 
+            for (let y = 0; y < numPointsSide; y++) {
+                for (let x = 0; x < numPointsSide; x++) {
+                    const latVal = latPointsArray[y];
+                    const lonVal = lonPointsArray[x];
+                    if (typeof google !== 'undefined' && google.maps && google.maps.LatLng) {
+                        gridPointsForSDK.push(new google.maps.LatLng(parseFloat(latVal.toFixed(6)), parseFloat(lonVal.toFixed(6))));
+                    } else { 
+                        gridPointsForSDK.push({ lat: parseFloat(latVal.toFixed(6)), lng: parseFloat(lonVal.toFixed(6)) });
+                    }
+                }
+            }
             
-            const latSpacingMeters = sideLengthMeters / (numPointsSide > 1 ? numPointsSide - 1 : 1);
-            const lonSpacingMeters = sideLengthMeters / (numPointsSide > 1 ? numPointsSide - 1 : 1);
-
             if (!lastMessageIsUniformElevationWarning) {
-                 showMessage(`Grid defined: ${numPointsSide}x${numPointsSide} points. Approx. spacing: ${latSpacingMeters.toFixed(1)}m.`, false);
+                 showMessage(`Grid defined: ${numPointsSide}x${numPointsSide} points.`, false);
             }
-            return { gridPointsForApi, latSpacingMeters, lonSpacingMeters, boundingBoxCoords };
+            return { gridPointsForSDK, boundingBoxCoords, latPointsArray, lonPointsArray };
         }
 
-        async function getElevationsWithGoogle(pointsForApi) { 
-            if (!pointsForApi || pointsForApi.length === 0) return [];
-            showMessage(`Querying Google Elevation API for ${pointsForApi.length} points via GET... (may require multiple batches)`, false);
+        async function getElevationsWithGoogleSDK(pointsForSDK) { 
+            if (!pointsForSDK || pointsForSDK.length === 0) return [];
+            if (!elevationService) {
+                showMessage("Elevation service not ready. Please wait for Google Maps API to load.", true);
+                return null;
+            }
+            showMessage(`Querying Google Elevation SDK for ${pointsForSDK.length} points... (may require multiple batches)`, false);
             
             let allElevations = [];
-            const numBatches = Math.ceil(pointsForApi.length / GOOGLE_ELEVATION_POINTS_LIMIT);
+            const numBatches = Math.ceil(pointsForSDK.length / GOOGLE_ELEVATION_POINTS_LIMIT);
 
             for (let i = 0; i < numBatches; i++) {
                 const batchStart = i * GOOGLE_ELEVATION_POINTS_LIMIT;
                 const batchEnd = batchStart + GOOGLE_ELEVATION_POINTS_LIMIT;
-                const batchPointsObjects = pointsForApi.slice(batchStart, batchEnd);
-                
-                const locationsParamString = batchPointsObjects.map(p => `${p.lat},${p.lng}`).join('|');
-                const url = `https://maps.googleapis.com/maps/api/elevation/json?locations=${locationsParamString}&key=${Maps_API_KEY}`;
+                const batchLatLngObjects = pointsForSDK.slice(batchStart, batchEnd);
                                 
-                showMessage(`Fetching elevation batch ${i+1} of ${numBatches} via GET... (URL length: ${url.length})`, false);
-                console.log("Requesting Elevation URL (GET):", url);
-
+                showMessage(`Fetching elevation batch ${i+1} of ${numBatches} via SDK...`, false);
+                
                 try {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-                    const response = await fetch(url, { 
-                        method: 'GET',
-                        signal: controller.signal,
-                        redirect: 'follow' // Explicitly follow redirects
+                    const results = await new Promise((resolve, reject) => {
+                        elevationService.getElevationForLocations({ 'locations': batchLatLngObjects }, (elevationResults, status) => {
+                            console.log(`Google Elevation SDK Response (Batch ${i+1}):`, status, elevationResults);
+                            if (status === 'OK' && elevationResults) {
+                                resolve(elevationResults);
+                            } else {
+                                reject(new Error(`Google Elevation SDK Error (Batch ${i+1}): ${status}`));
+                            }
+                        });
                     });
-                    clearTimeout(timeoutId);
+                    const elevationsFromBatch = results.map(result => result.elevation);
+                    allElevations.push(...elevationsFromBatch);
 
-                    const data = await response.json();
-                    console.log(`Google Elevation API Response (Batch ${i+1} GET):`, JSON.stringify(data, null, 2));
-
-                    if (data.status === "OK" && data.results) {
-                        const elevationsFromBatch = data.results.map(result => result.elevation);
-                        allElevations.push(...elevationsFromBatch);
-                    } else {
-                         throw new Error(`Google Elevation API Error (Batch ${i+1} GET): ${data.status}. ${data.error_message || ''}`);
-                    }
                 } catch (error) {
-                    console.error("Google Elevation API error (GET):", error); 
-                    let errMsg = `Elevation fetching error (Batch ${i+1} GET): ${error.message}`; 
-                    if (error.name === 'AbortError') errMsg = `Elevation request (Batch ${i+1} GET) timed out.`;
-                    showMessage(errMsg, true);
+                    console.error("Google Elevation SDK error:", error); 
+                    showMessage(`Elevation fetching error (Batch ${i+1} SDK): ${error.message}`, true);
                     return null; 
                 }
             }
@@ -245,117 +312,203 @@
                     showMessage(uniformMessage, false, true);
                     lastMessageIsUniformElevationWarning = true;
                 } else if (!lastMessageIsUniformElevationWarning) {
-                     showMessage(`Elevations received for ${allElevations.length} points from Google.`, false);
+                     showMessage(`Elevations received for ${allElevations.length} points from Google SDK.`, false);
                 }
-            } else if (!lastMessageIsUniformElevationWarning && allElevations.length === pointsForApi.length) {
-                 showMessage(`Elevations received for ${allElevations.length} points from Google.`, false);
-            } else if (!lastMessageIsUniformElevationWarning && allElevations.length !== pointsForApi.length) {
-                 showMessage(`Partial or no elevation data received. Expected ${pointsForApi.length}, got ${allElevations.length}. Check console.`, true);
+            } else if (!lastMessageIsUniformElevationWarning && allElevations.length === pointsForSDK.length) {
+                 showMessage(`Elevations received for ${allElevations.length} points from Google SDK.`, false);
+            } else if (!lastMessageIsUniformElevationWarning && allElevations.length !== pointsForSDK.length) {
+                 showMessage(`Partial or no elevation data received. Expected ${pointsForSDK.length}, got ${allElevations.length}. Check console.`, true);
             }
-            return allElevations;
+            return allElevations; 
+        }
+        
+        const hypsometricColors = [ 
+            '#5e90a5', 
+            '#86c396', 
+            '#d3e49a', 
+            '#ffffbf', 
+            '#fee08b', 
+            '#fdae61', 
+            '#d73027'  
+        ];
+
+        function getHypsometricFillColor(elevation, minElev, maxElev, numBands = HYPSO_NUM_BANDS) {
+            if (maxElev === minElev) return hypsometricColors[Math.floor(hypsometricColors.length / 2)]; 
+            const range = maxElev - minElev;
+            if (range <= 0) return hypsometricColors[0]; 
+
+            const normalizedElev = (elevation - minElev) / range; 
+            const bandIndex = Math.floor(normalizedElev * (numBands -1)); 
+
+            return hypsometricColors[Math.min(Math.max(bandIndex, 0), hypsometricColors.length - 1)];
         }
 
-        function calculateGradientMagnitudes(elevationList, numPointsSide, latSpacingMeters, lonSpacingMeters) {
-             if (!elevationList || elevationList.length !== numPointsSide * numPointsSide) {
-                showMessage("Invalid elevation list or mismatch for gradient calculation.", true);
-                return null;
-            }
-            if (latSpacingMeters <= 0 || lonSpacingMeters <= 0) {
-                showMessage("Point spacing must be positive for gradient calculation.", true);
-                return null;
-            }
-
-            if (!lastMessageIsUniformElevationWarning) {
-                showMessage("Calculating gradient magnitudes...", false);
-            }
-            const elevationGrid = [];
-            for (let i = 0; i < numPointsSide; i++) {
-                elevationGrid.push(elevationList.slice(i * numPointsSide, (i + 1) * numPointsSide));
-            }
-
-            const gradLat = Array(numPointsSide).fill(null).map(() => Array(numPointsSide).fill(0));
-            const gradLon = Array(numPointsSide).fill(null).map(() => Array(numPointsSide).fill(0));
-
-            for (let i = 1; i < numPointsSide - 1; i++) {
-                for (let j = 1; j < numPointsSide - 1; j++) {
-                    gradLat[i][j] = (elevationGrid[i+1][j] - elevationGrid[i-1][j]) / (2 * latSpacingMeters);
-                    gradLon[i][j] = (elevationGrid[i][j+1] - elevationGrid[i][j-1]) / (2 * lonSpacingMeters);
-                }
-            }
-
-            for (let k = 0; k < numPointsSide; k++) {
-                if (k > 0 && k < numPointsSide - 1) { 
-                    gradLon[0][k] = (elevationGrid[0][k+1] - elevationGrid[0][k-1]) / (2 * lonSpacingMeters);
-                    gradLon[numPointsSide-1][k] = (elevationGrid[numPointsSide-1][k+1] - elevationGrid[numPointsSide-1][k-1]) / (2 * lonSpacingMeters);
-                } else if (k === 0) { 
-                    gradLon[0][k] = numPointsSide > 1 ? (elevationGrid[0][k+1] - elevationGrid[0][k]) / lonSpacingMeters : 0;
-                    gradLon[numPointsSide-1][k] = numPointsSide > 1 ? (elevationGrid[numPointsSide-1][k+1] - elevationGrid[numPointsSide-1][k]) / lonSpacingMeters : 0;
-                } else { 
-                    gradLon[0][k] = numPointsSide > 1 ? (elevationGrid[0][k] - elevationGrid[0][k-1]) / lonSpacingMeters : 0;
-                    gradLon[numPointsSide-1][k] = numPointsSide > 1 ? (elevationGrid[numPointsSide-1][k] - elevationGrid[numPointsSide-1][k-1]) / lonSpacingMeters : 0;
-                }
-                gradLat[0][k] = numPointsSide > 1 ? (elevationGrid[1][k] - elevationGrid[0][k]) / latSpacingMeters : 0;
-                gradLat[numPointsSide-1][k] = numPointsSide > 1 ? (elevationGrid[numPointsSide-1][k] - elevationGrid[numPointsSide-2][k]) / latSpacingMeters : 0;
-                
-                if (k > 0 && k < numPointsSide - 1) {
-                    gradLat[k][0] = (elevationGrid[k+1][0] - elevationGrid[k-1][0]) / (2 * latSpacingMeters); 
-                    gradLon[k][0] = numPointsSide > 1 ? (elevationGrid[k][1] - elevationGrid[k][0]) / lonSpacingMeters : 0;
-                    gradLat[k][numPointsSide-1] = (elevationGrid[k+1][numPointsSide-1] - elevationGrid[k-1][numPointsSide-1]) / (2 * latSpacingMeters);
-                    gradLon[k][numPointsSide-1] = numPointsSide > 1 ? (elevationGrid[k][numPointsSide-1] - elevationGrid[k][numPointsSide-2]) / lonSpacingMeters : 0;
-                }
-            }
-            if (numPointsSide === 1) { gradLat[0][0] = 0; gradLon[0][0] = 0; }
-            
-            const gradientMagnitudes = [];
-            for (let i = 0; i < numPointsSide; i++) {
-                for (let j = 0; j < numPointsSide; j++) {
-                    gradientMagnitudes.push(Math.sqrt(gradLat[i][j]**2 + gradLon[i][j]**2));
-                }
-            }
-            if (!lastMessageIsUniformElevationWarning) {
-                 showMessage("Gradient magnitudes calculated.", false);
-            }
-            return gradientMagnitudes;
-        }
-
-        function createOrUpdateTopologyMap(centerLat, centerLon, gridPointsForApi, valuesForHeatmap, propertyMarkerCoords, acresBoundsCoords, inputAcres) {
+        function createOrUpdateTopologyMap(centerLat, centerLon, gridData, elevationValues, propertyMarkerCoords, acresBoundsCoords, inputAcres) {
             mapContainer.classList.remove('hidden');
             
             if (!map) {
-                map = L.map('map').setView([centerLat, centerLon], 15);
+                map = L.map('map').setView([centerLat, centerLon], 16); 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(map);
             } else { map.setView([centerLat, centerLon]); }
 
-            if (heatLayer) map.removeLayer(heatLayer);
+            if (hypsometricCellLayerGroup) map.removeLayer(hypsometricCellLayerGroup);
+            if (contourLayerGroup) map.removeLayer(contourLayerGroup);
+            if (spotElevationLayerGroup) map.removeLayer(spotElevationLayerGroup);
             if (propertyMarker) map.removeLayer(propertyMarker);
             if (boundsRectangle) map.removeLayer(boundsRectangle);
+            if (legendControl) map.removeControl(legendControl);
 
-            const heatmapData = [];
-            if (valuesForHeatmap && valuesForHeatmap.length > 0 && gridPointsForApi.length === valuesForHeatmap.length) {
-                for (let i = 0; i < gridPointsForApi.length; i++) {
-                    if (valuesForHeatmap[i] !== null && valuesForHeatmap[i] !== undefined && isFinite(valuesForHeatmap[i])) {
-                        heatmapData.push([gridPointsForApi[i].lat, gridPointsForApi[i].lng, valuesForHeatmap[i]]);
+            hypsometricCellLayerGroup = L.layerGroup().addTo(map); 
+            contourLayerGroup = L.layerGroup().addTo(map);
+            spotElevationLayerGroup = L.layerGroup().addTo(map);
+
+            const minElev = Math.min(...elevationValues);
+            const maxElev = Math.max(...elevationValues);
+            
+            // --- Hypsometric Cell Tinting ---
+            if (elevationValues && elevationValues.length === NUM_POINTS_SIDE * NUM_POINTS_SIDE && maxElev > minElev) {
+                for (let y_idx = 0; y_idx < NUM_POINTS_SIDE - 1; y_idx++) {
+                    for (let x_idx = 0; x_idx < NUM_POINTS_SIDE - 1; x_idx++) {
+                        const topLeft = [gridData.latPointsArray[y_idx], gridData.lonPointsArray[x_idx]];
+                        const bottomRight = [gridData.latPointsArray[y_idx + 1], gridData.lonPointsArray[x_idx + 1]];
+                        
+                        const cellElevation = elevationValues[y_idx * NUM_POINTS_SIDE + x_idx];
+                        const cellColor = getHypsometricFillColor(cellElevation, minElev, maxElev, HYPSO_NUM_BANDS);
+
+                        L.rectangle([topLeft, bottomRight], { 
+                            color: cellColor, 
+                            weight: 0, 
+                            fillColor: cellColor,
+                            fillOpacity: HYPSO_CELL_OPACITY,
+                            className: 'hypsometric-cell'
+                        }).addTo(hypsometricCellLayerGroup);
                     }
                 }
             }
-            
-            const allGradientsEffectivelyZero = valuesForHeatmap.every(v => v === 0 || (v && Math.abs(v) < 0.0001));
 
-            if (heatmapData.length > 0 && !allGradientsEffectivelyZero) {
-                 heatLayer = L.heatLayer(heatmapData, { radius: 20, blur: 15, maxZoom: 18 }).addTo(map);
-                if (!lastMessageIsUniformElevationWarning) {
-                    showMessage("Map updated with gradient heatmap.", false);
+
+            // --- Contour Lines ---
+            let lineThresholds = [];
+            if (maxElev > minElev && (maxElev - minElev) > CONTOUR_INTERVAL_METERS) {
+                const startThreshold = Math.ceil(minElev / CONTOUR_INTERVAL_METERS) * CONTOUR_INTERVAL_METERS;
+                for (let t = startThreshold; t < maxElev; t += CONTOUR_INTERVAL_METERS) {
+                    lineThresholds.push(t);
                 }
-            } else if (allGradientsEffectivelyZero && heatmapData.length > 0) {
-                if (!lastMessageIsUniformElevationWarning) {
-                    showMessage("Calculated gradient is uniformly zero. Terrain appears flat based on data; no heatmap variations visible.", false, true);
-                }
-            } else {
-                showMessage("No valid data points to display on heatmap. Check console for API errors or data issues.", true);
+                 if (lineThresholds.length === 0 && startThreshold <= maxElev) lineThresholds.push(startThreshold);
+            } else if (maxElev > minElev) { 
+                lineThresholds.push(minElev + (maxElev - minElev) / 2);
             }
+             if (lineThresholds.length === 0 && elevationValues.length > 0 && !elevationValues.every(e => e === elevationValues[0])) { 
+                 lineThresholds.push(elevationValues.reduce((a,b) => a+b,0) / elevationValues.length);
+            }
+
+            console.log("Line Contour Thresholds:", lineThresholds);
+
+            if (lineThresholds.length > 0 && elevationValues.length === NUM_POINTS_SIDE * NUM_POINTS_SIDE) {
+                const d3LineContours = d3.contours() 
+                    .size([NUM_POINTS_SIDE, NUM_POINTS_SIDE]) 
+                    .thresholds(lineThresholds) 
+                    (elevationValues); 
+
+                d3LineContours.forEach(contourFeature => { 
+                    const transformedCoordinates = contourFeature.coordinates.map(polygon =>
+                        polygon.map(ring =>
+                            ring.map(point => { 
+                                const lon = gridData.lonPointsArray[Math.max(0, Math.min(Math.round(point[0]), NUM_POINTS_SIDE - 1))];
+                                const lat = gridData.latPointsArray[Math.max(0, Math.min(Math.round(point[1]), NUM_POINTS_SIDE - 1))];
+                                return [lon, lat]; 
+                            })
+                        )
+                    );
+
+                    const geoJsonFeature = {
+                        type: "Feature",
+                        properties: { value: contourFeature.value }, 
+                        geometry: { type: contourFeature.type, coordinates: transformedCoordinates }
+                    };
+
+                    L.geoJSON(geoJsonFeature, {
+                        style: function(feature) {
+                            return {
+                                weight: CONTOUR_LINE_WEIGHT, 
+                                color: '#444444', 
+                                opacity: 0.8,
+                                fill: false,
+                                smoothFactor: CONTOUR_SMOOTH_FACTOR 
+                            };
+                        },
+                        onEachFeature: function(feature, layer) {
+                            const elevMeters = feature.properties.value;
+                            const elevFeet = elevMeters * METERS_TO_FEET;
+                            layer.bindTooltip(`${elevMeters.toFixed(0)}m (${elevFeet.toFixed(0)}ft)`, {
+                                permanent: false, direction: 'auto', className: 'contour-label', sticky: true 
+                            });
+                        }
+                    }).addTo(contourLayerGroup);
+                });
+            }
+            
+            // --- Spot Elevation Markers ---
+            if (elevationValues && elevationValues.length === NUM_POINTS_SIDE * NUM_POINTS_SIDE) {
+                const step = Math.floor((NUM_POINTS_SIDE -1) / (NUM_SPOT_ELEVATIONS_SIDE - 1));
+                if (step > 0) { 
+                    for (let y_s = 0; y_s < NUM_SPOT_ELEVATIONS_SIDE; y_s++) {
+                        for (let x_s = 0; x_s < NUM_SPOT_ELEVATIONS_SIDE; x_s++) {
+                            const y_idx = Math.min(y_s * step, NUM_POINTS_SIDE - 1);
+                            const x_idx = Math.min(x_s * step, NUM_POINTS_SIDE - 1);
+                            
+                            const lat = gridData.latPointsArray[y_idx];
+                            const lon = gridData.lonPointsArray[x_idx];
+                            const elevMeters = elevationValues[y_idx * NUM_POINTS_SIDE + x_idx];
+                            
+                            if (elevMeters !== null && elevMeters !== undefined) {
+                                const elevFeet = (elevMeters * METERS_TO_FEET).toFixed(0);
+                                const spotLabel = L.divIcon({
+                                    className: 'spot-elevation-label', html: `${elevFeet}ft`,
+                                    iconSize: [30, 15], iconAnchor: [15, 7] 
+                                });
+                                L.marker([lat, lon], { icon: spotLabel, interactive: false }).addTo(spotElevationLayerGroup);
+                            }
+                        }
+                    }
+                } else if (NUM_SPOT_ELEVATIONS_SIDE === 1) { 
+                     const y_idx = Math.floor((NUM_POINTS_SIDE -1) / 2);
+                     const x_idx = Math.floor((NUM_POINTS_SIDE -1) / 2);
+                     // ... (rest of single spot elevation logic)
+                }
+            }
+
+            // --- Legend for Hypsometric Tints ---
+            legendControl = L.control({position: 'bottomright'});
+            legendControl.onAdd = function (mapInstance) { 
+                const div = L.DomUtil.create('div', 'info legend');
+                const contourIntervalFt = (CONTOUR_INTERVAL_METERS * METERS_TO_FEET).toFixed(1);
+                div.innerHTML = `<h4>Elevation Tiers</h4><div style="font-size:10px; margin-bottom:3px;">(Contours: ~${contourIntervalFt}ft)</div>`;
+                
+                if (maxElev > minElev) {
+                    const range = maxElev - minElev;
+                    const bandSize = range / HYPSO_NUM_BANDS;
+                    for (let i = 0; i < HYPSO_NUM_BANDS; i++) {
+                        const bandMinElev = minElev + i * bandSize;
+                        const bandMaxElev = minElev + (i + 1) * bandSize;
+                        const color = getHypsometricFillColor(bandMinElev + bandSize / 2, minElev, maxElev); 
+                        div.innerHTML +=
+                            '<i style="background:' + color + '; opacity:'+ HYPSO_CELL_OPACITY +'"></i> ' +
+                            `${(bandMinElev * METERS_TO_FEET).toFixed(0)} - ${(bandMaxElev * METERS_TO_FEET).toFixed(0)} ft<br>`;
+                    }
+                } else {
+                     div.innerHTML += '<i></i> Uniform Elevation<br>';
+                }
+
+                if(lastMessageIsUniformElevationWarning){
+                    div.innerHTML += `<div style="font-size:10px; color:orange;">Terrain appears flat.</div>`;
+                }
+                return div;
+            };
+            legendControl.addTo(map);
 
             if (propertyMarkerCoords) {
                 propertyMarker = L.marker([propertyMarkerCoords.latitude, propertyMarkerCoords.longitude], {
@@ -365,22 +518,33 @@
                         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
                         shadowSize: [41, 41]
                     })
-                }).addTo(map).bindPopup("<b>Property Location</b>").openPopup();
+                }).addTo(map).bindPopup("<b>Property Location</b>"); // Removed .openPopup()
             }
 
             if (acresBoundsCoords) {
                 boundsRectangle = L.rectangle([
                     [acresBoundsCoords[0], acresBoundsCoords[1]], 
                     [acresBoundsCoords[2], acresBoundsCoords[3]]
-                ], { color: '#ff7800', weight: 2, fillOpacity: 0.05, fillColor: '#78a0ff' })
+                ], { color: '#ff7800', weight: 2, fillOpacity: 0.0, interactive: false }) 
                 .addTo(map).bindTooltip(`${inputAcres} Acres Area`);
                 map.fitBounds(boundsRectangle.getBounds(), {padding: [20, 20]});
             } else if (propertyMarkerCoords) {
                  map.setView([propertyMarkerCoords.latitude, propertyMarkerCoords.longitude], 15);
             }
+            
+            if (lastMessageIsUniformElevationWarning) {
+                 // Message already shown
+            } else {
+                showMessage("Topographic map generated.", false);
+            }
         }
 
         async function handleProcessRequest() {
+            if (!geocoderService || !elevationService) {
+                showMessage("Google Maps services are not yet loaded. Please wait a moment and try again.", true);
+                return;
+            }
+
             const addressStr = addressInput.value.trim();
             const acresStr = acresInput.value.trim();
 
@@ -394,45 +558,28 @@
             messageArea.textContent = ''; 
 
             try {
-                const propertyCoords = await geocodeAddressWithGoogle(addressStr);
+                const propertyCoords = await geocodeAddressWithGoogleSDK(addressStr);
                 if (!propertyCoords) { setLoadingState(false); return; }
-                console.log("Geocoded Property Coords:", propertyCoords);
+                console.log("Geocoded Property Coords (SDK):", propertyCoords);
 
                 const gridData = getGridPointsAndSteps(propertyCoords.latitude, propertyCoords.longitude, acresVal, NUM_POINTS_SIDE);
                 if (!gridData) { setLoadingState(false); return; }
-                const { gridPointsForApi, latSpacingMeters, lonSpacingMeters, boundingBoxCoords } = gridData;
                 
-                const elevationValues = await getElevationsWithGoogle(gridPointsForApi);
-                console.log("Processed Elevation Values (Google GET):", elevationValues);
+                const elevationValues = await getElevationsWithGoogleSDK(gridData.gridPointsForSDK);
+                console.log("Processed Elevation Values (Google SDK):", elevationValues);
 
-                if (!elevationValues || elevationValues.length !== gridPointsForApi.length) {
+                if (!elevationValues || elevationValues.length !== gridData.gridPointsForSDK.length) {
                     setLoadingState(false);
                     if (!lastMessageIsUniformElevationWarning && !elevationValues) {
-                        // Error message already shown by getElevationsWithGoogle
+                        // Error message handled by getElevationsWithGoogleSDK
                     } else if (!lastMessageIsUniformElevationWarning) {
-                         showMessage("Mismatch or incomplete elevation data received from Google GET.", true);
+                         showMessage("Mismatch or incomplete elevation data received from Google SDK.", true);
                     }
                     return;
                 }
                 
-                const gradientMagnitudes = calculateGradientMagnitudes(elevationValues, NUM_POINTS_SIDE, latSpacingMeters, lonSpacingMeters);
-                console.log("Calculated Gradient Magnitudes (Google GET):", gradientMagnitudes);
-
-                if (!gradientMagnitudes) {
-                    if (!lastMessageIsUniformElevationWarning) {
-                        showMessage("Gradient calculation failed. Visualizing raw elevations instead if available.", true);
-                    }
-                    if (elevationValues && !lastMessageIsUniformElevationWarning) {
-                         createOrUpdateTopologyMap(propertyCoords.latitude, propertyCoords.longitude, gridPointsForApi, elevationValues.map(e => e === null || e === undefined ? 0 : e), propertyCoords, boundingBoxCoords, acresVal);
-                         showMessage("Displaying raw elevation data heatmap due to gradient calculation issue.", false, true);
-                    } else if (!lastMessageIsUniformElevationWarning) {
-                        showMessage("Could not calculate gradients or display raw elevations.", true);
-                    } else { 
-                         createOrUpdateTopologyMap(propertyCoords.latitude, propertyCoords.longitude, gridPointsForApi, [], propertyCoords, boundingBoxCoords, acresVal);
-                    }
-                } else {
-                    createOrUpdateTopologyMap(propertyCoords.latitude, propertyCoords.longitude, gridPointsForApi, gradientMagnitudes, propertyCoords, boundingBoxCoords, acresVal);
-                }
+                createOrUpdateTopologyMap(propertyCoords.latitude, propertyCoords.longitude, gridData, elevationValues, propertyCoords, gridData.boundingBoxCoords, acresVal);
+                
 
             } catch (error) {
                 console.error("Main processing error:", error);
