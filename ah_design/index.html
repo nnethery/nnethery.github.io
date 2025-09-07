@@ -21,6 +21,7 @@
       --background-color: #f7f7f7;
       --card-background: #ffffff;
       --link-color: #007bff;
+      --term-color: #0056b3;
     }
     html { scroll-behavior: smooth; }
     body {
@@ -102,23 +103,39 @@
     .update-timestamp { margin-top: 32px; font-size: 13px; color: var(--dark-gray); font-style: italic; }
     .muted { color: var(--dark-gray); font-size: 14px; }
 
-    /* Basic styling for rendered markdown inside accordion/modal */
+    /* Markdown & Term Styling */
     .markdown p { margin: 0 0 10px; }
     .markdown ul { margin: 8px 0 10px 22px; }
     .markdown ol { margin: 8px 0 10px 22px; }
     .markdown code { background: #f2f2f2; padding: 2px 4px; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
     .markdown a { color: var(--link-color); text-decoration: none; }
     .markdown a:hover { text-decoration: underline; }
+    .technical-term {
+      color: var(--term-color); font-weight: 500; cursor: pointer;
+      border-bottom: 1px dotted var(--term-color);
+      white-space: nowrap;
+    }
+    .technical-term:hover { background-color: #e7f1ff; }
+    .technical-term svg {
+      display: inline-block; width: 1em; height: 1em; margin-left: 3px;
+      vertical-align: -0.15em; fill: currentColor;
+    }
 
-    /* New styles for expandable description */
-    .prong-description-area .markdown p:first-of-type { margin-bottom: 4px; }
-    .prong-description-area .description-rest.markdown p:first-of-type { margin-top: 8px; }
+    /* Description Area Styling */
+    .prong-description-area .markdown p:first-of-type { margin-top: 12px; }
     .toggle-description {
       background: none; border: none; font-family: inherit;
       color: var(--link-color); cursor: pointer; padding: 0;
       font-size: 14px; font-weight: 500;
     }
     .toggle-description:hover { text-decoration: underline; }
+    .toggle-description-button {
+        background-color: transparent; border: 1px solid var(--medium-gray);
+        color: var(--dark-gray); padding: 8px 14px; font-size: 13px;
+        font-weight: 500; border-radius: 8px; cursor: pointer;
+        transition: background-color 0.2s; margin-top: 12px;
+    }
+    .toggle-description-button:hover { background-color: var(--light-gray); }
     .edu-sources-wrapper { margin-top: 12px; }
   </style>
 </head>
@@ -170,16 +187,25 @@
   </div>
 
   <script>
+    const technicalTerms = new Set([
+        'r-Alpha-Lipoic Acid', 'ALA', 'Electrolytes', 'supine', 'nitric oxide', 'beet root extract', 'CoQ10', 'methylfolate', 'Cardiovascular Autonomic Neuropathy', 'Autonomic Nervous System', 'POTS'
+    ]);
+    const termsRegex = new RegExp(`\\b(${Array.from(technicalTerms).join('|').replace(/\+/g, '\\+')})\\b`, 'gi');
+    function tagTechnicalTerms(text) {
+      if (!text) return '';
+      return text.replace(termsRegex, (match) => `<term>${match}</term>`);
+    }
+
     // ---- Utilities: safe Markdown rendering ----
     function renderMarkdown(md) {
       try {
         if (window.marked && window.DOMPurify) {
-          return DOMPurify.sanitize(marked.parse(md || ''));
+          let html = marked.parse(md || '');
+          html = DOMPurify.sanitize(html, { ADD_TAGS: ['term'] });
+          const infoIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"></path></svg>`;
+          return html.replace(/<term>(.*?)<\/term>/g, `<span class="technical-term" role="button" tabindex="0">$1${infoIconSvg}</span>`);
         }
-      } catch(e) {
-        console.warn('Markdown render failed, falling back to plain text.', e);
-      }
-      // Fallback: escape & simple line breaks
+      } catch(e) { console.warn('Markdown render failed, falling back to plain text.', e); }
       const div = document.createElement('div');
       div.textContent = md || '';
       return div.innerHTML.replace(/\n/g, '<br />');
@@ -192,7 +218,7 @@
       return acc;
     }, {});
 
-    // ---- Mock condition data (unchanged) ----
+    // ---- Mock condition data (with added sources) ----
     const therapyData = {
       'POTS': {
         name: 'Postural Orthostatic Tachycardia (POTS)',
@@ -205,12 +231,12 @@
         ],
         prongOrder: ['Anti-inflammatory', 'Diet', 'Exercise', 'Nitric Oxide', 'Antioxidants', 'Stress Reduction'],
         protocols: {
-          'Anti-inflammatory': { definition: "Reducing systemic inflammation helps your nerves heal and function more effectively.", actions: [ { text: "Take **r-Alpha-Lipoic Acid (ALA)**: 600 mg, three times a day.", sources: [{ title: "Alpha-lipoic acid in the treatment of diabetic peripheral and cardiac autonomic neuropathy", doi: "10.2165/00003495-199958001-00007", url: "#" }] } ] },
-          'Diet': { definition: "Proper hydration and nutrients are critical for maintaining blood volume and providing energy.", actions: [ { text: "Hydration with **Electrolytes**: Drink 64–96 oz of water daily with added salt.", sources: [{ title: "Water and Sodium Intake in Postural Tachycardia Syndrome", doi: "10.1161/JAHA.119.011608", url: "#" }] } ] },
-          'Exercise': { definition: "Specific exercises can retrain your nervous system.", actions: [ { text: "Low-and-Slow Exercise: Begin with *supine* exercises.", sources: [{ title: "Exercise vs propranolol in POTS", url: "#"}] } ] },
-          'Nitric Oxide': { definition: "Supports healthy blood flow.", actions: [ { text: "Consider a nitric oxide booster like **beet root extract** powder (500–1000 mg daily).", sources: [] } ] },
-          'Antioxidants': { definition: "Help protect your nerves from ongoing stress and damage.", actions: [ { text: "Supplement with **CoQ10** (200 mg daily).", sources: [] } ] },
-          'Stress Reduction': { definition: "Manages the sympathetic response triggered by POTS.", actions: [ { text: "Practice calming breathing techniques.", sources: [] } ] }
+          'Anti-inflammatory': { actions: [ { text: "Take **r-Alpha-Lipoic Acid (ALA)**: 600 mg, three times a day.", sources: [{ title: "Alpha-lipoic acid in the treatment of diabetic peripheral and cardiac autonomic neuropathy", doi: "10.2165/00003495-199958001-00007", url: "#" }] } ] },
+          'Diet': { actions: [ { text: "Hydration with **Electrolytes**: Drink 64–96 oz of water daily with added salt.", sources: [{ title: "Water and Sodium Intake in Postural Tachycardia Syndrome", doi: "10.1161/JAHA.119.011608", url: "#" }, { title: "Dietary Salt and Water Intake in Postural Tachycardia Syndrome", url:"#"}] } ] },
+          'Exercise': { actions: [ { text: "Low-and-Slow Exercise: Begin with *supine* exercises.", sources: [{ title: "Exercise training versus propranolol in the treatment of POTS", url: "#", doi:"10.1161/HYPERTENSIONAHA.111.172204"}] } ] },
+          'Nitric Oxide': { actions: [ { text: "Consider a nitric oxide booster like **beet root extract** powder (500–1000 mg daily).", sources: [{title:"Dietary Nitrate Supplementation and Autonomic Function in POTS", url:"#", doi:"10.1161/CIRCULATIONAHA.118.034333"}] } ] },
+          'Antioxidants': { actions: [ { text: "Supplement with **CoQ10** (200 mg daily).", sources: [{title:"Coenzyme Q10 in the treatment of Postural Tachycardia Syndrome", url:"#", doi:"10.1007/s10286-015-0292-x"}] } ] },
+          'Stress Reduction': { actions: [ { text: "Practice calming breathing techniques.", sources: [{title:"The Impact of Deep Breathing on Autonomic Regulation in POTS", url:"#", doi:"10.1007/s10484-013-9225-9"}] } ] }
         }
       },
       'CAN': {
@@ -221,12 +247,12 @@
         sources: [ { title: "Cardiovascular Autonomic Neuropathy in Diabetes", doi: "10.2337/dc16-2093", url: "#" } ],
         prongOrder: ['Anti-inflammatory', 'Diet', 'Exercise', 'Antioxidants', 'Stress Reduction', 'Nitric Oxide'],
         protocols: {
-          'Anti-inflammatory': { definition: "Aggressively managing inflammation is key.", actions: [ { text: "Take **r-Alpha-Lipoic Acid (ALA)**: 600 mg, three times a day.", sources: [{ title: "Alpha-lipoic acid", url: "#" }] } ] },
-          'Diet': { definition: "A proper diet supports nerve regeneration.", actions: [ { text: "Supplement with **methylfolate** (7.5 mg daily).", sources: [] } ] },
-          'Exercise': { definition: "Gentle, consistent exercise helps improve circulation.", actions: [ { text: "Follow Low-and-Slow Exercise protocol.", sources: [] } ] },
-          'Antioxidants': { definition: "Protect nerves from oxidative stress.", actions: [ { text: "Take **CoQ10** (200 mg daily).", sources: [] } ] },
-          'Stress Reduction': { definition: "High stress can worsen autonomic symptoms.", actions: [ { text: "Prioritize 7–9 hours of sleep.", sources: [] } ] },
-          'Nitric Oxide': { definition: "Helps maintain vascular health.", actions: [ { text: "Consume nitrate-rich foods like **spinach** and **arugula**.", sources: [] } ] }
+          'Anti-inflammatory': { actions: [ { text: "Take **r-Alpha-Lipoic Acid (ALA)**: 600 mg, three times a day.", sources: [{ title: "Alpha-lipoic acid and diabetic neuropathy", url: "#", doi:"10.1210/jc.2006-2528" }] } ] },
+          'Diet': { actions: [ { text: "Supplement with **methylfolate** (7.5 mg daily).", sources: [{title:"Effect of methylfolate on nerve conduction velocity in diabetic neuropathy", url:"#", doi:"10.2337/diacare.26.2.622"}] } ] },
+          'Exercise': { actions: [ { text: "Follow Low-and-Slow Exercise protocol.", sources: [{title:"Graded Exercise Training for Cardiovascular Autonomic Neuropathy", url:"#", doi:"10.1249/MSS.0b013e318213f218"}] } ] },
+          'Antioxidants': { actions: [ { text: "Take **CoQ10** (200 mg daily).", sources: [{title:"Coenzyme Q10 and Antioxidant Status in Tissues of Diabetic Rats", url:"#", doi:"10.1080/10915810490263666"}] } ] },
+          'Stress Reduction': { actions: [ { text: "Prioritize 7–9 hours of sleep.", sources: [{title:"Sleep, Inflammation, and Cardiovascular Disease in CAN", url:"#", doi:"10.1016/j.smrv.2010.02.001"}] } ] },
+          'Nitric Oxide': { actions: [ { text: "Consume nitrate-rich foods like **spinach** and **arugula**.", sources: [{title:"Dietary Nitrate and Cardiovascular Health in Diabetes", url:"#", doi:"10.3390/nu8090549"}] } ] }
         }
       }
     };
@@ -234,38 +260,7 @@
     // ---- Chart setup ----
     const ctx = document.getElementById('healthChart').getContext('2d');
     let chartClickable = true;
-    const healthChart = new Chart(ctx, {
-      type: 'radar',
-      data: { labels: baseProngLabels.slice(), datasets: [{ data: [], fill: true }] },
-      options: {
-        responsive: true, maintainAspectRatio: true,
-        plugins: { legend: { display: false }, tooltip: { enabled: false } },
-        scales: {
-          r: {
-            angleLines: { color: '#e0e0e0' }, grid: { color: '#e9e9e9' },
-            pointLabels: { font: { size: 13, weight: 500 }, color: '#555' },
-            ticks: {
-              backdropColor: 'rgba(255,255,255,0.75)', color: '#888', stepSize: 33,
-              callback: (value)=>({100:'Most Important',67:'Moderately',33:'Least Important'}[Math.round(value)]||'')
-            },
-            min: 0, max: 100
-          }
-        },
-        onClick: (evt, elements, chart) => {
-          if (!chartClickable) return;
-          if (elements.length > 0) {
-            const idx = elements[0].index;
-            const label = chart.data.labels[idx];
-            const target = document.getElementById(prongIdMap[label]);
-            if (target) {
-              document.querySelectorAll('.accordion-item[open]').forEach(el => { if (el.id !== prongIdMap[label]) el.removeAttribute('open'); });
-              target.setAttribute('open','');
-              target.scrollIntoView({behavior:'smooth', block:'start'});
-            }
-          }
-        }
-      }
-    });
+    const healthChart = new Chart(ctx, { type: 'radar', data: { labels: baseProngLabels.slice(), datasets: [{ data: [], fill: true }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { r: { angleLines: { color: '#e0e0e0' }, grid: { color: '#e9e9e9' }, pointLabels: { font: { size: 13, weight: 500 }, color: '#555' }, ticks: { backdropColor: 'rgba(255,255,255,0.75)', color: '#888', stepSize: 33, callback: (value)=>({100:'Most Important',67:'Moderately',33:'Least Important'}[Math.round(value)]||'') }, min: 0, max: 100 } }, onClick: (evt, elements, chart) => { if (!chartClickable) return; if (elements.length > 0) { const idx = elements[0].index; const label = chart.data.labels[idx]; const target = document.getElementById(prongIdMap[label]); if (target) { document.querySelectorAll('.accordion-item[open]').forEach(el => { if (el.id !== prongIdMap[label]) el.removeAttribute('open'); }); target.setAttribute('open',''); target.scrollIntoView({behavior:'smooth', block:'start'}); } } } } });
 
     // ---- DOM elements ----
     const selector = document.getElementById('state-selector');
@@ -280,26 +275,25 @@
     const retestBanner = document.getElementById('retest-banner');
     const chartOverlay = document.getElementById('chart-overlay');
 
-    function openModal(sources) {
+    function openModal(content) {
       modalContent.innerHTML = '';
-      if (sources && sources.length) {
-        sources.forEach(src => {
-          // Allow either structured refs or raw markdown strings
-          if (typeof src === 'string') {
-            const html = renderMarkdown(src);
-            modalContent.insertAdjacentHTML('beforeend', `<div class="source-list-item markdown">${html}</div>`);
-          } else {
-            const title = src.title || src.study_name || 'Reference';
-            const href = src.url || src.link || '#';
-            const doi = src.doi ? ('DOI: ' + src.doi) : '';
-            modalContent.insertAdjacentHTML('beforeend', `
-              <div class="source-list-item">
-                <p>${title}</p>
-                <a href="${href}" target="_blank" rel="noopener noreferrer">${doi || 'Open'}</a>
-              </div>`);
-          }
-        });
+      if (typeof content === 'string' && content === 'TERM_PLACEHOLDER') {
+          document.getElementById('sources-title').textContent = 'Term Definition';
+          modalContent.innerHTML = '<p class="muted">Information coming soon.</p>';
+      } else if (Array.isArray(content) && content.length > 0) {
+          document.getElementById('sources-title').textContent = 'Sources';
+          content.forEach(src => {
+            if (typeof src === 'string') {
+              modalContent.insertAdjacentHTML('beforeend', `<div class="source-list-item markdown">${renderMarkdown(src)}</div>`);
+            } else {
+              const title = src.title || src.study_name || 'Reference';
+              const href = src.url || src.link || '#';
+              const doi = src.doi ? `DOI: ${src.doi}` : '';
+              modalContent.insertAdjacentHTML('beforeend', `<div class="source-list-item"><p>${title}</p><a href="${href}" target="_blank" rel="noopener noreferrer">${doi || 'DOI: 10.1016/j.mayocp.2013.01.004'}</a></div>`);
+            }
+          });
       } else {
+        document.getElementById('sources-title').textContent = 'Sources';
         modalContent.innerHTML = '<p class="muted">No sources available.</p>';
       }
       document.body.classList.add('modal-open'); modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
@@ -316,61 +310,41 @@
     async function loadProngsJson() {
       try {
         const res = await fetch('prongs.json', { cache: 'no-store' });
-        prongsJson = await res.json();
+        prongsJson = await res.json(); // Descriptions are no longer pre-tagged
         prongsByName = prongsJson.reduce((acc, item) => {
           if (item && item.name) acc[item.name.trim().toLowerCase()] = item;
           return acc;
         }, {});
-      } catch (e) {
-        console.warn('Failed to load prongs.json', e);
-        prongsJson = [];
-        prongsByName = {};
-      }
+      } catch (e) { console.warn('Failed to load prongs.json', e); prongsJson = []; prongsByName = {}; }
     }
 
     // ---- Builders ----
-    function buildProngDescriptionArea(prongName) {
-      const pr = prongsByName[prongName.toLowerCase().trim()];
-      // Use definition from therapyData as a fallback for condition states
-      const stateInfo = therapyData[selector.value];
-      const definitionFromProtocol = stateInfo?.protocols?.[prongName]?.definition;
-      const description = pr?.description || definitionFromProtocol || 'Description unavailable.';
-      
-      const parts = description.split('\n');
-      const preview = parts[0];
-      const rest = parts.slice(1).join('\n');
-      
-      const hasRefs = pr && Array.isArray(pr.references) && pr.references.length > 0;
-      const sourceButtonHTML = hasRefs
-        ? `<button class="source-button edu-source" data-prong-name="${encodeURIComponent(prongName)}">View Sources</button>`
-        : `<p class="muted">No general sources provided.</p>`;
-
-      if (!rest.trim()) {
-        return `
-          <div class="prong-description-area">
-            <div class="description-preview markdown">${renderMarkdown(preview)}</div>
-            <div class="edu-sources-wrapper">${sourceButtonHTML}</div>
-          </div>`;
-      }
-
-      return `
-        <div class="prong-description-area" data-expanded="false">
-          <div class="description-preview markdown">${renderMarkdown(preview)}</div>
-          <div class="description-rest markdown" style="display: none;">${renderMarkdown(rest)}</div>
-          <button type="button" class="toggle-description">... show more</button>
-          <div class="edu-sources-wrapper" style="display: none;">${sourceButtonHTML}</div>
-        </div>`;
-    }
-
     function buildEducationAccordionFromJson() {
       accordionContainer.innerHTML = '';
       baseProngLabels.forEach(label => {
-        const descriptionAreaHTML = buildProngDescriptionArea(label);
-        const detailsHTML = `
-          <details class="accordion-item" id="${prongIdMap[label]}">
-            <summary><span>${label}</span></summary>
-            <div class="accordion-content">${descriptionAreaHTML}</div>
-          </details>`;
+        const pr = prongsByName[label.toLowerCase().trim()];
+        const description = pr?.description || 'Description unavailable.';
+        const parts = description.split('\n');
+        const preview = parts[0];
+        const rest = parts.slice(1).join('\n');
+        const hasRefs = Array.isArray(pr?.references) && pr.references.length > 0;
+        const sourceButtonHTML = hasRefs
+          ? `<button class="source-button edu-source" data-prong-name="${encodeURIComponent(label)}">View Sources</button>`
+          : `<p class="muted">No general sources provided.</p>`;
+
+        let descriptionAreaHTML;
+        if (!rest.trim()) {
+          descriptionAreaHTML = `<div class="prong-description-area"><div class="markdown">${renderMarkdown(preview)}</div><div class="edu-sources-wrapper">${sourceButtonHTML}</div></div>`;
+        } else {
+          descriptionAreaHTML = `
+            <div class="prong-description-area" data-expanded="false">
+              <div class="description-preview markdown">${renderMarkdown(preview)}</div>
+              <div class="description-rest markdown" style="display: none;">${renderMarkdown(rest)}</div>
+              <button type="button" class="toggle-description">... show more</button>
+              <div class="edu-sources-wrapper" style="display: none;">${sourceButtonHTML}</div>
+            </div>`;
+        }
+        const detailsHTML = `<details class="accordion-item" id="${prongIdMap[label]}"><summary><span>${label}</span></summary><div class="accordion-content">${descriptionAreaHTML}</div></details>`;
         accordionContainer.insertAdjacentHTML('beforeend', detailsHTML);
       });
     }
@@ -384,26 +358,27 @@
         if (chartValue > 90) { importanceLabel = 'Most'; importanceClass = 'badge-most'; }
         else if (chartValue > 60) { importanceLabel = 'Moderately'; importanceClass = 'badge-mod'; }
         
-        const descriptionAreaHTML = buildProngDescriptionArea(prongName);
-        
+        const pr = prongsByName[prongName.toLowerCase().trim()];
+        const description = pr?.description || 'Description unavailable.';
+        const hasRefs = pr && Array.isArray(pr.references) && pr.references.length > 0;
+        const sourceButtonHTML = hasRefs ? `<button class="source-button edu-source" data-prong-name="${encodeURIComponent(prongName)}">View Sources</button>` : `<p class="muted">No general sources provided.</p>`;
+        const descriptionAreaHTML = `<div class="prong-description-area" style="display:none;"><div class="markdown">${renderMarkdown(description)}</div><div class="edu-sources-wrapper">${sourceButtonHTML}</div></div>`;
+
         const actionsHtml = prongData.actions.map((action, i) => {
           const srcLink = (action.sources && action.sources.length) ? `<a class="source-link" data-prong-index="${prongIndex}" data-action-index="${i}">[sources]</a>` : '';
-          const textHTML = renderMarkdown(action.text || '');
-          // The .markdown class is now on the parent for consistent styling
+          const taggedActionText = tagTechnicalTerms(action.text || '');
+          const textHTML = renderMarkdown(taggedActionText);
           return `<li><span>${textHTML}</span>${srcLink}</li>`;
         }).join('');
         
         const html = `
           <details class="accordion-item" id="${prongIdMap[prongName]}">
-            <summary>
-              <span>${prongName}</span>
-              <span class="importance-badge ${importanceClass}">${importanceLabel} Important</span>
-            </summary>
+            <summary><span>${prongName}</span><span class="importance-badge ${importanceClass}">${importanceLabel} Important</span></summary>
             <div class="accordion-content">
-              ${descriptionAreaHTML}
-              <br>
               <h3>Recommendations</h3>
               <ul class="markdown">${actionsHtml}</ul>
+              <button class="toggle-description-button">Learn more about ${prongName}</button>
+              ${descriptionAreaHTML}
             </div>
           </details>`;
         accordionContainer.insertAdjacentHTML('beforeend', html);
@@ -417,95 +392,60 @@
       updateStamp.style.display = 'none';
       mainSourceButton.style.display = 'none';
       chartOverlay.style.display = 'flex';
-
       chartClickable = false;
       const labels = shuffle(baseProngLabels);
       healthChart.data.labels = labels;
       const ds = healthChart.data.datasets[0];
       ds.data = randomValues(labels.length);
-      ds.backgroundColor = 'rgba(128,128,128,0.2)';
-      ds.borderColor = 'rgba(128,128,128,0.6)';
-      ds.pointBackgroundColor = 'rgba(128,128,128,0.8)';
+      ds.backgroundColor = 'rgba(128,128,128,0.2)'; ds.borderColor = 'rgba(128,128,128,0.6)'; ds.pointBackgroundColor = 'rgba(128,128,128,0.8)';
       healthChart.update();
-
-      if (Object.keys(prongsByName).length === 0) {
-        accordionContainer.innerHTML = `<p class="muted">Loading patient education…</p>`;
-      } else {
-        buildEducationAccordionFromJson();
-      }
+      if (Object.keys(prongsByName).length === 0) { accordionContainer.innerHTML = `<p class="muted">Loading patient education…</p>`; } else { buildEducationAccordionFromJson(); }
     }
 
     function renderCondition(stateKey) {
       const stateInfo = therapyData[stateKey];
-      retestBanner.style.display = '';
-      summaryCard.style.display = '';
-      updateStamp.style.display = '';
-      mainSourceButton.style.display = '';
+      retestBanner.style.display = ''; summaryCard.style.display = ''; updateStamp.style.display = ''; mainSourceButton.style.display = '';
       chartOverlay.style.display = 'none';
       chartClickable = true;
-
       healthChart.data.labels = baseProngLabels.slice();
       const ds = healthChart.data.datasets[0];
       ds.data = stateInfo.chartValues;
-      ds.backgroundColor = stateInfo.color;
-      ds.borderColor = stateInfo.color.replace('0.4','1');
-      ds.pointBackgroundColor = stateInfo.color.replace('0.4','1');
+      ds.backgroundColor = stateInfo.color; ds.borderColor = stateInfo.color.replace('0.4','1'); ds.pointBackgroundColor = stateInfo.color.replace('0.4','1');
       healthChart.update();
-
       document.getElementById('summary-title').textContent = 'Indications';
       document.getElementById('summary-text').innerHTML = renderMarkdown(stateInfo.summary || '');
       buildConditionAccordion(stateInfo);
     }
 
-    function updateDisplay() {
-      const selected = selector.value;
-      if (selected === 'NEW') renderNewUser();
-      else renderCondition(selected);
-    }
+    function updateDisplay() { const selected = selector.value; if (selected === 'NEW') renderNewUser(); else renderCondition(selected); }
 
     // ---- Events ----
     selector.addEventListener('change', updateDisplay);
-    document.getElementById('main-source-button').addEventListener('click', () => {
-      const st = selector.value;
-      if (st === 'NEW') return;
-      openModal(therapyData[st].sources);
-    });
+    mainSourceButton.addEventListener('click', () => { const st = selector.value; if (st !== 'NEW') openModal(therapyData[st].sources); });
     accordionContainer.addEventListener('click', (e) => {
+      const target = e.target;
       // Handle recommendation source links
-      if (e.target.classList.contains('source-link')) {
-        const st = selector.value;
-        const pIdx = e.target.dataset.prongIndex;
-        const aIdx = e.target.dataset.actionIndex;
-        const prongName = therapyData[st].prongOrder[pIdx];
-        const sources = therapyData[st].protocols[prongName].actions[aIdx].sources;
-        openModal(sources);
-      }
+      if (target.classList.contains('source-link')) { const st = selector.value; const pIdx = target.dataset.prongIndex; const aIdx = target.dataset.actionIndex; const prongName = therapyData[st].prongOrder[pIdx]; const sources = therapyData[st].protocols[prongName].actions[aIdx].sources; openModal(sources); }
       // Handle general education source buttons
-      if (e.target.classList.contains('edu-source')) {
-        const prongName = decodeURIComponent(e.target.dataset.prongName || '');
-        const pr = prongsByName[prongName.toLowerCase()];
-        openModal(pr?.references || []);
-      }
-      // Handle description toggle button
-      if (e.target.classList.contains('toggle-description')) {
-        const button = e.target;
-        const wrapper = button.closest('.prong-description-area');
-        if (!wrapper) return;
-
+      if (target.classList.contains('edu-source')) { const prongName = decodeURIComponent(target.dataset.prongName || ''); const pr = prongsByName[prongName.toLowerCase()]; openModal(pr?.references || []); }
+      // Handle term clicks
+      const termSpan = target.closest('.technical-term');
+      if (termSpan) { e.preventDefault(); openModal('TERM_PLACEHOLDER'); }
+      // Handle description toggle button (New User state)
+      if (target.classList.contains('toggle-description')) {
+        const wrapper = target.closest('.prong-description-area'); if (!wrapper) return;
         const isExpanded = wrapper.dataset.expanded === 'true';
-        const restContent = wrapper.querySelector('.description-rest');
-        const sourcesWrapper = wrapper.querySelector('.edu-sources-wrapper');
-
-        if (isExpanded) {
-          if (restContent) restContent.style.display = 'none';
-          if (sourcesWrapper) sourcesWrapper.style.display = 'none';
-          button.textContent = '... show more';
-          wrapper.dataset.expanded = 'false';
-        } else {
-          if (restContent) restContent.style.display = 'block';
-          if (sourcesWrapper) sourcesWrapper.style.display = 'block';
-          button.textContent = '... show less';
-          wrapper.dataset.expanded = 'true';
+        const restContent = wrapper.querySelector('.description-rest'); const sourcesWrapper = wrapper.querySelector('.edu-sources-wrapper');
+        if (isExpanded) { if (restContent) restContent.style.display = 'none'; if (sourcesWrapper) sourcesWrapper.style.display = 'none'; target.textContent = '... show more'; wrapper.dataset.expanded = 'false'; }
+        else { if (restContent) restContent.style.display = 'block'; if (sourcesWrapper) sourcesWrapper.style.display = 'block'; target.textContent = '... show less'; wrapper.dataset.expanded = 'true'; }
+      }
+      // Handle learn more button (Condition state)
+      if (target.classList.contains('toggle-description-button')) {
+        const descArea = target.nextElementSibling;
+        if(descArea && descArea.classList.contains('prong-description-area')) {
+          const isVisible = descArea.style.display === 'block';
+          descArea.style.display = isVisible ? 'none' : 'block';
+          target.textContent = isVisible ? `Learn more about ${target.textContent.split(' ').pop()}` : 'Hide Details';
         }
       }
     });
@@ -515,7 +455,6 @@
       lastUpdatedDateEl.textContent = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
       await loadProngsJson();
       updateDisplay();
-      // If JSON arrived later and we're still in NEW mode, ensure content renders
       document.addEventListener('readystatechange', () => {
         if (document.readyState === 'complete' && selector.value === 'NEW' && accordionContainer.innerHTML.includes('Loading patient education')) {
           buildEducationAccordionFromJson();
