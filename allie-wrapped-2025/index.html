@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Allie's 2025 Goodreads Wrapped</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="phone-frame">
+            <div class="progress-container">
+                <div class="progress-segments"></div>
+            </div>
+
+            <div class="story-container">
+                <!-- Slide 0: Intro -->
+                <div class="slide active" data-slide="0" data-bg="gradient-intro">
+                    <div class="slide-content center-content">
+                        <div class="year-badge">2025</div>
+                        <h1 class="hero-title">Allie's<br>Reading<br>Wrapped</h1>
+                        <p class="subtitle fade-in-delay">75 books. 27,546 pages.<br>One discerning reader.</p>
+                        <div class="tap-hint">Tap to begin</div>
+                    </div>
+                </div>
+
+                <!-- Slide 1: Big Numbers -->
+                <div class="slide" data-slide="1" data-bg="gradient-purple">
+                    <div class="slide-content">
+                        <p class="slide-label">THIS YEAR YOU READ</p>
+                        <div class="big-stat">
+                            <span class="stat-number count-up" data-target="75">0</span>
+                            <span class="stat-label">books</span>
+                        </div>
+                        <div class="stat-comparison">
+                            That's <strong>6.4 books per month</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2: Pages -->
+                <div class="slide" data-slide="2" data-bg="gradient-blue">
+                    <div class="slide-content">
+                        <p class="slide-label">YOU TURNED</p>
+                        <div class="big-stat">
+                            <span class="stat-number count-up" data-target="27546">0</span>
+                            <span class="stat-label">pages</span>
+                        </div>
+                        <div class="stat-comparison">
+                            That's <strong>6.5x</strong> the entire Harry Potter series
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3: Reading Pace -->
+                <div class="slide" data-slide="3" data-bg="gradient-teal">
+                    <div class="slide-content">
+                        <p class="slide-label">YOUR READING PACE</p>
+                        <div class="pace-stats">
+                            <div class="pace-item">
+                                <span class="pace-number">78</span>
+                                <span class="pace-label">pages/day</span>
+                            </div>
+                            <div class="pace-divider"></div>
+                            <div class="pace-item">
+                                <span class="pace-number">4.7</span>
+                                <span class="pace-label">days/book</span>
+                            </div>
+                        </div>
+                        <p class="insight-text">A new book every 5 days, all year long</p>
+                    </div>
+                </div>
+
+                <!-- Slide 4: Reading Streak -->
+                <div class="slide" data-slide="4" data-bg="gradient-streak">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">READING RHYTHM</p>
+                        <div class="streak-display">
+                            <div class="streak-number">74</div>
+                            <div class="streak-label">days with a book finished</div>
+                        </div>
+                        <p class="insight-text subtle">Longest gap: 13 days<br><span class="gap-date">July 24 - August 6</span></p>
+                    </div>
+                </div>
+
+                <!-- Slide 5: Monthly Chart -->
+                <div class="slide" data-slide="5" data-bg="gradient-dark">
+                    <div class="slide-content">
+                        <p class="slide-label">YOUR READING YEAR</p>
+                        <div class="chart-container monthly-chart">
+                            <canvas id="monthlyChart"></canvas>
+                        </div>
+                        <p class="chart-callout"><strong>April</strong> and <strong>September</strong> were your peak months with 10 books each</p>
+                    </div>
+                </div>
+
+                <!-- Slide 6: February Slump -->
+                <div class="slide" data-slide="6" data-bg="gradient-winter">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">THE FEBRUARY SLUMP</p>
+                        <div class="slump-stat">
+                            <span class="slump-number">3</span>
+                            <span class="slump-label">books</span>
+                        </div>
+                        <p class="slump-context">Your slowest month of the year</p>
+                        <p class="insight-text">But you came back swinging in April with 10</p>
+                    </div>
+                </div>
+
+                <!-- Slide 7: Top Author -->
+                <div class="slide" data-slide="7" data-bg="gradient-warm">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">YOUR TOP AUTHOR</p>
+                        <div class="author-spotlight">
+                            <div class="author-icon">EF</div>
+                            <h2 class="author-name">Elena Ferrante</h2>
+                            <p class="author-stat">4 books</p>
+                        </div>
+                        <p class="insight-text">You completed the entire Neapolitan Novels saga</p>
+                    </div>
+                </div>
+
+                <!-- Slide 8: Ferrante Deep Dive -->
+                <div class="slide" data-slide="8" data-bg="gradient-naples">
+                    <div class="slide-content">
+                        <p class="slide-label">THE FERRANTE FAITHFUL</p>
+                        <div class="series-display">
+                            <div class="series-books">
+                                <div class="book-spine" style="--delay: 0">1</div>
+                                <div class="book-spine" style="--delay: 1">2</div>
+                                <div class="book-spine" style="--delay: 2">3</div>
+                                <div class="book-spine" style="--delay: 3">4</div>
+                            </div>
+                            <p class="series-name">Neapolitan Novels</p>
+                            <div class="series-rating">
+                                <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+                                <span class="rating-num">4.5 avg</span>
+                            </div>
+                        </div>
+                        <p class="quote-text">"1,700 pages of friendship as battlefield, Naples as character"</p>
+                    </div>
+                </div>
+
+                <!-- Slide 9: Ferrante Quote -->
+                <div class="slide" data-slide="9" data-bg="gradient-naples-dark">
+                    <div class="slide-content center-content">
+                        <div class="quote-block">
+                            <span class="quote-mark">"</span>
+                            <p class="big-quote">One does not simply read a Ferrante book, one lives it.</p>
+                            <span class="quote-attribution">— Allie's review of Those Who Leave and Those Who Stay</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 10: Ferrante Deep Quote -->
+                <div class="slide" data-slide="10" data-bg="gradient-naples">
+                    <div class="slide-content center-content">
+                        <div class="quote-block">
+                            <span class="quote-mark">"</span>
+                            <p class="medium-quote">The new living flesh was replicating the old in a game, we were a chain of shadows who had always been on the stage with the same burden of love, hatred, desire, and violence.</p>
+                            <span class="quote-attribution">— passage from Those Who Leave and Those Who Stay</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 11: Rating Style -->
+                <div class="slide" data-slide="11" data-bg="gradient-coral">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">YOUR RATING STYLE</p>
+                        <div class="rating-personality">
+                            <div class="personality-badge">THE DISCERNING CRITIC</div>
+                            <div class="rating-avg">
+                                <span class="big-rating">3.66</span>
+                                <span class="rating-context">avg rating</span>
+                            </div>
+                        </div>
+                        <p class="insight-text">You rate <strong>0.42 stars lower</strong> than the community average</p>
+                    </div>
+                </div>
+
+                <!-- Slide 12: Rating Distribution -->
+                <div class="slide" data-slide="12" data-bg="gradient-dark">
+                    <div class="slide-content">
+                        <p class="slide-label">HOW YOU RATED</p>
+                        <div class="rating-bars">
+                            <div class="rating-row">
+                                <span class="star-label">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                                <div class="bar-track"><div class="bar-fill" style="--width: 24%"><span>7</span></div></div>
+                            </div>
+                            <div class="rating-row">
+                                <span class="star-label">&#9733;&#9733;&#9733;&#9733;</span>
+                                <div class="bar-track"><div class="bar-fill" style="--width: 38%"><span>11</span></div></div>
+                            </div>
+                            <div class="rating-row">
+                                <span class="star-label">&#9733;&#9733;&#9733;</span>
+                                <div class="bar-track"><div class="bar-fill" style="--width: 28%"><span>8</span></div></div>
+                            </div>
+                            <div class="rating-row">
+                                <span class="star-label">&#9733;&#9733;</span>
+                                <div class="bar-track"><div class="bar-fill zero" style="--width: 0%"><span>0</span></div></div>
+                            </div>
+                            <div class="rating-row">
+                                <span class="star-label">&#9733;</span>
+                                <div class="bar-track"><div class="bar-fill red" style="--width: 10%"><span>3</span></div></div>
+                            </div>
+                        </div>
+                        <p class="chart-callout">No 2-star books. You know what you like.</p>
+                    </div>
+                </div>
+
+                <!-- Slide 13: The No 2-Star Zone -->
+                <div class="slide" data-slide="13" data-bg="gradient-decisive">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">THE NO 2-STAR ZONE</p>
+                        <div class="zero-display">
+                            <div class="zero-number">0</div>
+                            <div class="zero-label">books rated 2 stars</div>
+                        </div>
+                        <p class="insight-text dramatic">For you, it's either worth the time<br>or it's not.</p>
+                    </div>
+                </div>
+
+                <!-- Slide 14: Five Stars Intro -->
+                <div class="slide" data-slide="14" data-bg="gradient-gold">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">THE ONES THAT MATTERED</p>
+                        <div class="five-star-intro">
+                            <span class="star-burst">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                            <div class="five-count">7</div>
+                            <div class="five-label">perfect reads</div>
+                        </div>
+                        <p class="insight-text">When you give 5 stars, you mean it</p>
+                    </div>
+                </div>
+
+                <!-- Slide 15: Five Star Books -->
+                <div class="slide" data-slide="15" data-bg="gradient-gold-dark">
+                    <div class="slide-content">
+                        <p class="slide-label">THE SEVEN 5-STAR READS</p>
+                        <div class="five-star-list">
+                            <div class="five-star-book"><span class="book-title">100 Rules for Living to 100</span><span class="book-author">Dick Van Dyke</span></div>
+                            <div class="five-star-book"><span class="book-title">Ordinary Grace</span><span class="book-author">William Kent Krueger</span></div>
+                            <div class="five-star-book"><span class="book-title">The Shattered King</span><span class="book-author">Charlie N. Holmberg</span></div>
+                            <div class="five-star-book"><span class="book-title">The King Must Die</span><span class="book-author">Mary Renault</span></div>
+                            <div class="five-star-book"><span class="book-title">We Will Be Jaguars</span><span class="book-author">Nemonte Nenquimo</span></div>
+                            <div class="five-star-book"><span class="book-title">The Story of a New Name</span><span class="book-author">Elena Ferrante</span></div>
+                            <div class="five-star-book"><span class="book-title">Everything Is Tuberculosis</span><span class="book-author">John Green</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 16: King Must Die -->
+                <div class="slide" data-slide="16" data-bg="gradient-ancient">
+                    <div class="slide-content">
+                        <p class="slide-label">MOST LOVED</p>
+                        <div class="spotlight-book">
+                            <h2 class="spotlight-title">The King Must Die</h2>
+                            <p class="spotlight-author">Mary Renault, 1958</p>
+                            <div class="spotlight-divergence">
+                                <span class="you-rated">You: &#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                                <span class="community-rated">Community: 3.97</span>
+                            </div>
+                        </div>
+                        <p class="quote-text italic">"A reader who wants to be transported, not validated. She'd rather wrestle with alien values than be reassured by familiar ones."</p>
+                    </div>
+                </div>
+
+                <!-- Slide 17: Ordinary Grace Quote -->
+                <div class="slide" data-slide="17" data-bg="gradient-grace">
+                    <div class="slide-content center-content">
+                        <div class="quote-block">
+                            <span class="quote-mark">"</span>
+                            <p class="medium-quote">The dead are never far from us. They're in our hearts and on our minds and in the end all that separates us from them is a single breath, one final puff of air.</p>
+                            <span class="quote-attribution">— from Ordinary Grace</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 18: We Will Be Jaguars -->
+                <div class="slide" data-slide="18" data-bg="gradient-jungle">
+                    <div class="slide-content">
+                        <p class="slide-label">FIERCE FAVORITES</p>
+                        <div class="spotlight-book">
+                            <h2 class="spotlight-title">We Will Be Jaguars</h2>
+                            <p class="spotlight-author">Nemonte Nenquimo</p>
+                        </div>
+                        <p class="quote-text">"Nemonte, many stars, you are a fierce jaguar warrior. It was an honor and a privilege to hear your story."</p>
+                        <p class="insight-text small">"Stories are living beings, as the Waorani people believe."</p>
+                    </div>
+                </div>
+
+                <!-- Slide 19: Shattered King -->
+                <div class="slide" data-slide="19" data-bg="gradient-fantasy">
+                    <div class="slide-content">
+                        <p class="slide-label">THE ROMANCE DONE RIGHT</p>
+                        <div class="spotlight-book small">
+                            <h2 class="spotlight-title">The Shattered King</h2>
+                            <p class="spotlight-author">Charlie N. Holmberg</p>
+                        </div>
+                        <p class="quote-text">"The romance felt well-earned, more emotionally based than carnal (hear that ACOTAR?) and realistic."</p>
+                        <p class="insight-text small">"You don't need a love triangle to evoke sweetness and sorrow."</p>
+                    </div>
+                </div>
+
+                <!-- Slide 20: The Hype Test -->
+                <div class="slide" data-slide="20" data-bg="gradient-red">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">THE HYPE TEST</p>
+                        <div class="hype-fail">
+                            <div class="hype-book">
+                                <span class="book-name">Onyx Storm</span>
+                                <div class="hype-stats">
+                                    <span class="community">Community: 4.21 &#9733;</span>
+                                    <span class="you">You: 1 &#9733;</span>
+                                </div>
+                                <span class="ratings-count">1.5M ratings on Goodreads</span>
+                            </div>
+                        </div>
+                        <p class="insight-text">BookTok's darling. You weren't convinced.</p>
+                    </div>
+                </div>
+
+                <!-- Slide 21: Onyx Storm Quote -->
+                <div class="slide" data-slide="21" data-bg="gradient-maroon">
+                    <div class="slide-content center-content">
+                        <div class="quote-block critical">
+                            <span class="quote-mark">"</span>
+                            <p class="medium-quote">Felt like a lot of running around with quippy, cringy dialogue and 🌽 scenes with little to no actual plot...</p>
+                            <p class="quote-kicker">this should have just been a trilogy.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 22: Hype Resistant -->
+                <div class="slide" data-slide="22" data-bg="gradient-defiant">
+                    <div class="slide-content">
+                        <p class="slide-label">HYPE-RESISTANT</p>
+                        <p class="quote-large">"Allie can smell inauthentic emotion from a mile away"</p>
+                        <div class="one-star-list">
+                            <div class="one-star-item">
+                                <span class="one-star-icon">&#9733;</span>
+                                <div class="one-star-details">
+                                    <span class="one-star-title">Onyx Storm</span>
+                                    <span class="one-star-gap">-3.21 from community</span>
+                                </div>
+                            </div>
+                            <div class="one-star-item">
+                                <span class="one-star-icon">&#9733;</span>
+                                <div class="one-star-details">
+                                    <span class="one-star-title">One Golden Summer</span>
+                                    <span class="one-star-gap">-3.30 from community</span>
+                                </div>
+                            </div>
+                            <div class="one-star-item">
+                                <span class="one-star-icon">&#9733;</span>
+                                <div class="one-star-details">
+                                    <span class="one-star-title">Very Cold People</span>
+                                    <span class="one-star-gap">-2.38 from community</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 23: Very Cold People Quote -->
+                <div class="slide" data-slide="23" data-bg="gradient-cold">
+                    <div class="slide-content center-content">
+                        <div class="quote-block melancholy">
+                            <span class="quote-mark">"</span>
+                            <p class="medium-quote">The sad part is that there were moments of really beautiful writing or evocative imagery.</p>
+                            <p class="quote-kicker">I am instead left bereft.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 24: Alchemised - The Epic -->
+                <div class="slide" data-slide="24" data-bg="gradient-alchemised">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">THE EPIC</p>
+                        <div class="epic-stat">
+                            <span class="epic-pages">1,030</span>
+                            <span class="epic-label">pages</span>
+                        </div>
+                        <p class="epic-title">Alchemised</p>
+                        <p class="quote-text">"A rose in a graveyard. Horribly macabre and beautifully intense."</p>
+                    </div>
+                </div>
+
+                <!-- Slide 25: Celtic Mythology -->
+                <div class="slide" data-slide="25" data-bg="gradient-celtic">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">MYTHOLOGY LOVER</p>
+                        <div class="spotlight-book">
+                            <h2 class="spotlight-title">The Gods Time Forgot</h2>
+                            <p class="spotlight-author">Kelsie Sheridan Gonzalez</p>
+                        </div>
+                        <p class="quote-text">"Really loved that it was inspired by Celtic mythology. My kind of story inspo!"</p>
+                        <p class="insight-text small">Greek, Celtic, Roman—you love ancient stories retold</p>
+                    </div>
+                </div>
+
+                <!-- Slide 26: Genre Universe -->
+                <div class="slide" data-slide="26" data-bg="gradient-space">
+                    <div class="slide-content">
+                        <p class="slide-label">YOUR GENRE UNIVERSE</p>
+                        <div class="genre-bubbles" id="genreBubbles"></div>
+                    </div>
+                </div>
+
+                <!-- Slide 27: Top Genres -->
+                <div class="slide" data-slide="27" data-bg="gradient-purple-dark">
+                    <div class="slide-content">
+                        <p class="slide-label">TOP GENRES</p>
+                        <div class="genre-ranking">
+                            <div class="genre-rank">
+                                <span class="rank-num">1</span>
+                                <span class="genre-name">Historical Fiction</span>
+                                <span class="genre-count">32 books</span>
+                            </div>
+                            <div class="genre-rank">
+                                <span class="rank-num">2</span>
+                                <span class="genre-name">Fantasy</span>
+                                <span class="genre-count">25 books</span>
+                            </div>
+                            <div class="genre-rank">
+                                <span class="rank-num">3</span>
+                                <span class="genre-name">Romance</span>
+                                <span class="genre-count">23 books</span>
+                            </div>
+                            <div class="genre-rank">
+                                <span class="rank-num">4</span>
+                                <span class="genre-name">Nonfiction</span>
+                                <span class="genre-count">17 books</span>
+                            </div>
+                            <div class="genre-rank">
+                                <span class="rank-num">5</span>
+                                <span class="genre-name">Classics</span>
+                                <span class="genre-count">10 books</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 28: Genre Quirks - One-Offs -->
+                <div class="slide" data-slide="28" data-bg="gradient-quirk">
+                    <div class="slide-content">
+                        <p class="slide-label">GENRE QUIRKS</p>
+                        <p class="quirk-intro">117 unique genres. 52 were one-of-a-kind:</p>
+                        <div class="quirk-list">
+                            <span class="quirk-tag">Parenting</span>
+                            <span class="quirk-tag">Psychology</span>
+                            <span class="quirk-tag">Humor</span>
+                            <span class="quirk-tag">World War II</span>
+                            <span class="quirk-tag">Art</span>
+                            <span class="quirk-tag">Native American</span>
+                            <span class="quirk-tag">Essays</span>
+                            <span class="quirk-tag">Historical Romance</span>
+                        </div>
+                        <p class="insight-text">You don't stay in one lane</p>
+                    </div>
+                </div>
+
+                <!-- Slide 29: LGBT Reads -->
+                <div class="slide" data-slide="29" data-bg="gradient-rainbow">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">DIVERSE STORIES</p>
+                        <div class="diversity-stat">
+                            <span class="diversity-number">5</span>
+                            <span class="diversity-label">LGBT books</span>
+                        </div>
+                        <p class="diversity-detail">Including The Will Darling Adventures trilogy by K.J. Charles</p>
+                    </div>
+                </div>
+
+                <!-- Slide 30: Genre Ratings -->
+                <div class="slide" data-slide="30" data-bg="gradient-genre-rate">
+                    <div class="slide-content">
+                        <p class="slide-label">WHAT YOU RATE HIGHEST</p>
+                        <div class="genre-rating-list">
+                            <div class="genre-rate-item top">
+                                <span class="genre-rate-name">Nonfiction</span>
+                                <span class="genre-rate-stars">4.75 &#9733;</span>
+                            </div>
+                            <div class="genre-rate-item top">
+                                <span class="genre-rate-name">Memoir</span>
+                                <span class="genre-rate-stars">4.67 &#9733;</span>
+                            </div>
+                            <div class="genre-rate-item top">
+                                <span class="genre-rate-name">Classics</span>
+                                <span class="genre-rate-stars">4.33 &#9733;</span>
+                            </div>
+                            <div class="genre-rate-divider"></div>
+                            <div class="genre-rate-item bottom">
+                                <span class="genre-rate-name">Romantasy</span>
+                                <span class="genre-rate-stars">3.00 &#9733;</span>
+                            </div>
+                            <div class="genre-rate-item bottom">
+                                <span class="genre-rate-name">Romance</span>
+                                <span class="genre-rate-stars">3.17 &#9733;</span>
+                            </div>
+                        </div>
+                        <p class="insight-text">Truth over fantasy. Reality over romance.</p>
+                    </div>
+                </div>
+
+                <!-- Slide 31: Old Soul -->
+                <div class="slide" data-slide="31" data-bg="gradient-sepia">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">THE OLD SOUL</p>
+                        <div class="era-comparison">
+                            <div class="era-stat old">
+                                <span class="era-rating">4.50</span>
+                                <span class="era-label">50-100 years old</span>
+                            </div>
+                            <div class="era-vs">vs</div>
+                            <div class="era-stat new">
+                                <span class="era-rating">3.17</span>
+                                <span class="era-label">Recent releases</span>
+                            </div>
+                        </div>
+                        <p class="insight-text">You rate older books significantly higher</p>
+                    </div>
+                </div>
+
+                <!-- Slide 32: Time Travel -->
+                <div class="slide" data-slide="32" data-bg="gradient-vintage">
+                    <div class="slide-content">
+                        <p class="slide-label">TIME TRAVEL</p>
+                        <div class="timeline">
+                            <div class="timeline-book oldest">
+                                <span class="timeline-year">1899</span>
+                                <span class="timeline-title">Heart of Darkness</span>
+                                <span class="timeline-author">Joseph Conrad</span>
+                            </div>
+                            <div class="timeline-line"></div>
+                            <div class="timeline-book newest">
+                                <span class="timeline-year">2025</span>
+                                <span class="timeline-title">We Did Ok, Kid</span>
+                                <span class="timeline-author">Anthony Hopkins</span>
+                            </div>
+                        </div>
+                        <p class="chart-callout"><strong>126 years</strong> of literature in one year</p>
+                    </div>
+                </div>
+
+                <!-- Slide 33: Book Lengths -->
+                <div class="slide" data-slide="33" data-bg="gradient-length">
+                    <div class="slide-content">
+                        <p class="slide-label">THE LONG AND SHORT OF IT</p>
+                        <div class="length-extremes">
+                            <div class="length-item shortest">
+                                <span class="length-pages">144</span>
+                                <span class="length-unit">pages</span>
+                                <span class="length-title">The Old Man Who Read Love Stories</span>
+                            </div>
+                            <div class="length-divider">to</div>
+                            <div class="length-item longest">
+                                <span class="length-pages">1,030</span>
+                                <span class="length-unit">pages</span>
+                                <span class="length-title">Alchemised</span>
+                            </div>
+                        </div>
+                        <p class="insight-text">Average book: 367 pages</p>
+                    </div>
+                </div>
+
+                <!-- Slide 34: Hidden Gems -->
+                <div class="slide" data-slide="34" data-bg="gradient-gem">
+                    <div class="slide-content">
+                        <p class="slide-label">HIDDEN GEMS</p>
+                        <div class="hipster-badge">
+                            <span class="hipster-icon">&#128142;</span>
+                            <span class="hipster-stat">35%</span>
+                            <span class="hipster-text">of your reads had fewer than 10K ratings</span>
+                        </div>
+                        <div class="most-obscure">
+                            <p class="obscure-label">Most obscure:</p>
+                            <p class="obscure-title">Demons in the Golden Empire</p>
+                            <p class="obscure-stat">Only 22 ratings on Goodreads</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 35: Your Discoveries -->
+                <div class="slide" data-slide="35" data-bg="gradient-discovery">
+                    <div class="slide-content">
+                        <p class="slide-label">YOUR DISCOVERIES</p>
+                        <p class="discovery-intro">High-rated books almost no one knows:</p>
+                        <div class="discovery-list">
+                            <div class="discovery-item">
+                                <span class="discovery-title">100 Rules for Living to 100</span>
+                                <span class="discovery-stat">637 ratings • You: &#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                            </div>
+                            <div class="discovery-item">
+                                <span class="discovery-title">An Indian Among los Indígenas</span>
+                                <span class="discovery-stat">247 ratings • You: &#9733;&#9733;&#9733;&#9733;</span>
+                            </div>
+                            <div class="discovery-item">
+                                <span class="discovery-title">The Home-Maker</span>
+                                <span class="discovery-stat">1,930 ratings • You: &#9733;&#9733;&#9733;&#9733;</span>
+                            </div>
+                            <div class="discovery-item">
+                                <span class="discovery-title">A Far Better Thing</span>
+                                <span class="discovery-stat">1,741 ratings • You: &#9733;&#9733;&#9733;&#9733;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 36: Hipster Comparison -->
+                <div class="slide" data-slide="36" data-bg="gradient-contrast">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">THE RANGE</p>
+                        <div class="hipster-compare">
+                            <div class="hipster-item obscure">
+                                <span class="hipster-num">22</span>
+                                <span class="hipster-context">ratings</span>
+                                <span class="hipster-book">Demons in the Golden Empire</span>
+                            </div>
+                            <div class="hipster-vs">vs</div>
+                            <div class="hipster-item mainstream">
+                                <span class="hipster-num">1.5M</span>
+                                <span class="hipster-context">ratings</span>
+                                <span class="hipster-book">Onyx Storm</span>
+                            </div>
+                        </div>
+                        <p class="insight-text">You don't just follow the algorithm</p>
+                    </div>
+                </div>
+
+                <!-- Slide 37: Peace Corps - Personal Story -->
+                <div class="slide" data-slide="37" data-bg="gradient-personal">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">A PERSONAL CONNECTION</p>
+                        <div class="spotlight-book small">
+                            <h2 class="spotlight-title">An Indian Among los Indígenas</h2>
+                            <p class="spotlight-author">A Peace Corps memoir</p>
+                        </div>
+                        <p class="quote-text">"Jarringly reminded me of my own service experiences, in Panama and Ecuador."</p>
+                    </div>
+                </div>
+
+                <!-- Slide 38: Peace Corps Deep Quote -->
+                <div class="slide" data-slide="38" data-bg="gradient-reflection">
+                    <div class="slide-content center-content">
+                        <div class="quote-block reflective">
+                            <span class="quote-mark">"</span>
+                            <p class="medium-quote">Who was really helping who here? Who was being changed?</p>
+                            <p class="quote-continuation">Humanity at the end of the day, is all about connections. About truly seeing each other.</p>
+                            <span class="quote-attribution">— Allie's review</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 39: The Ecuador Memory -->
+                <div class="slide" data-slide="39" data-bg="gradient-memory">
+                    <div class="slide-content center-content">
+                        <div class="quote-block personal">
+                            <span class="quote-mark">"</span>
+                            <p class="medium-quote">It reminds me of a connection I had made with someone from Ecuador who had little to his name, yet was desperate to leave me with a memento.</p>
+                            <p class="quote-continuation">He gifted me something more precious than I could have given.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 40: Broken Country -->
+                <div class="slide" data-slide="40" data-bg="gradient-bittersweet">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">BITTERSWEET</p>
+                        <div class="spotlight-book">
+                            <h2 class="spotlight-title">Broken Country</h2>
+                            <p class="spotlight-rating">&#9733;&#9733;&#9733;&#9733;</p>
+                        </div>
+                        <p class="quote-text">"Sad because Beth and Gabriel experienced an intense love and longing for each other that wasn't meant to be."</p>
+                    </div>
+                </div>
+
+                <!-- Slide 41: Ghost Bride -->
+                <div class="slide" data-slide="41" data-bg="gradient-spirit">
+                    <div class="slide-content">
+                        <p class="slide-label">SPIRIT WORLD</p>
+                        <div class="spotlight-book small">
+                            <h2 class="spotlight-title">The Ghost Bride</h2>
+                            <p class="spotlight-author">Yangsze Choo</p>
+                        </div>
+                        <p class="quote-text">"I enjoyed following Li Lan through the spirit world and discovering more about Chinese folklore."</p>
+                        <p class="insight-text small">You rated it higher than the community (+0.19 stars)</p>
+                    </div>
+                </div>
+
+                <!-- Slide 42: Series Commitment -->
+                <div class="slide" data-slide="42" data-bg="gradient-series">
+                    <div class="slide-content">
+                        <p class="slide-label">SERIES COMMITMENT</p>
+                        <div class="series-stats">
+                            <div class="series-stat-item">
+                                <span class="series-big">25</span>
+                                <span class="series-label">series books</span>
+                            </div>
+                            <div class="series-stat-item">
+                                <span class="series-big">15</span>
+                                <span class="series-label">unique series</span>
+                            </div>
+                        </div>
+                        <div class="completed-series">
+                            <p class="completed-label">Completed This Year:</p>
+                            <div class="series-badge">Neapolitan Novels (4 books)</div>
+                            <div class="series-badge">Kingdoms of Thorn and Bone (4 books)</div>
+                            <div class="series-badge">The Will Darling Adventures (3 books)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 43: Series Disappointment -->
+                <div class="slide" data-slide="43" data-bg="gradient-series-dark">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">THE SERIES LETDOWN</p>
+                        <div class="spotlight-book">
+                            <h2 class="spotlight-title">Kingdoms of Thorn and Bone</h2>
+                            <p class="spotlight-author">Greg Keyes</p>
+                        </div>
+                        <p class="quote-text">"The only fitting ending was Aspar's. The characters became dull or too far-fetched."</p>
+                    </div>
+                </div>
+
+                <!-- Slide 44: Eye Roll Quote -->
+                <div class="slide" data-slide="44" data-bg="gradient-critical">
+                    <div class="slide-content center-content">
+                        <div class="quote-block sharp">
+                            <span class="quote-mark">"</span>
+                            <p class="medium-quote">Eye rolling at the amount of times love interests swayed—</p>
+                            <p class="quote-kicker">I'm looking at you Sir Neil, and you too callous Anne.</p>
+                            <span class="quote-attribution">— on The Born Queen</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 45: What You Notice -->
+                <div class="slide" data-slide="45" data-bg="gradient-values">
+                    <div class="slide-content">
+                        <p class="slide-label">WHAT YOU NOTICE</p>
+                        <div class="values-list">
+                            <div class="value-item">
+                                <span class="value-icon">&#10084;</span>
+                                <span class="value-text">Romance & Chemistry quality</span>
+                            </div>
+                            <div class="value-item">
+                                <span class="value-icon">&#128172;</span>
+                                <span class="value-text">Authentic dialogue</span>
+                            </div>
+                            <div class="value-item">
+                                <span class="value-icon">&#128150;</span>
+                                <span class="value-text">Emotional resonance</span>
+                            </div>
+                            <div class="value-item">
+                                <span class="value-icon">&#128100;</span>
+                                <span class="value-text">Character consistency</span>
+                            </div>
+                            <div class="value-item">
+                                <span class="value-icon">&#127775;</span>
+                                <span class="value-text">Earned moments</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 46: Dialogue Quote -->
+                <div class="slide" data-slide="46" data-bg="gradient-critical">
+                    <div class="slide-content center-content">
+                        <div class="quote-block sharp">
+                            <span class="quote-mark">"</span>
+                            <p class="medium-quote">The dialogue between husband and wife felt very contrived—</p>
+                            <p class="quote-kicker">no one speaks that way.</p>
+                            <span class="quote-attribution">— on Fates and Furies</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 47: Just Not Believable -->
+                <div class="slide" data-slide="47" data-bg="gradient-skeptic">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">THE SKEPTIC</p>
+                        <div class="quote-block">
+                            <p class="big-quote">"Just not believable."</p>
+                            <span class="quote-attribution">— on Quicksilver (Fae & Alchemy)</span>
+                        </div>
+                        <p class="insight-text">Three words. Devastating.</p>
+                    </div>
+                </div>
+
+                <!-- Slide 48: Optimistic Activist -->
+                <div class="slide" data-slide="48" data-bg="gradient-hope">
+                    <div class="slide-content">
+                        <p class="slide-label">THE OPTIMISTIC ACTIVIST</p>
+                        <p class="personality-quote">"Allie doesn't want sanitized inspiration; she wants truth with teeth."</p>
+                        <div class="activist-books">
+                            <div class="activist-book">
+                                <span class="activist-title">We Will Be Jaguars</span>
+                                <span class="activist-desc">Fighting to protect the Amazon</span>
+                            </div>
+                            <div class="activist-book">
+                                <span class="activist-title">Everything Is Tuberculosis</span>
+                                <span class="activist-desc">Disease of poverty and inequity</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 49: TB Quote -->
+                <div class="slide" data-slide="49" data-bg="gradient-hope-dark">
+                    <div class="slide-content center-content">
+                        <div class="quote-block powerful">
+                            <span class="quote-mark">"</span>
+                            <p class="medium-quote">A stark reminder of the injustice and inequality all too prevalent in this world.</p>
+                            <p class="quote-kicker">Ultimately, we are the cause. We must also be the cure.</p>
+                            <span class="quote-attribution">— on Everything Is Tuberculosis</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 50: Dick Van Dyke -->
+                <div class="slide" data-slide="50" data-bg="gradient-joy">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">UNEXPECTED FAVORITE</p>
+                        <div class="spotlight-book">
+                            <h2 class="spotlight-title">100 Rules for Living to 100</h2>
+                            <p class="spotlight-author">Dick Van Dyke</p>
+                            <p class="spotlight-rating">&#9733;&#9733;&#9733;&#9733;&#9733;</p>
+                        </div>
+                        <p class="insight-text">Only 637 ratings, but a perfect 5 from you.<br>Optimism with substance. Joy that's been earned.</p>
+                    </div>
+                </div>
+
+                <!-- Slide 51: A Far Better Thing -->
+                <div class="slide" data-slide="51" data-bg="gradient-bittersweet">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">SPONTANEOUS FIND</p>
+                        <div class="spotlight-book">
+                            <h2 class="spotlight-title">A Far Better Thing</h2>
+                            <p class="spotlight-author">H.G. Parry</p>
+                        </div>
+                        <p class="quote-text">"Love the bittersweet ending. It ended up being an interesting read for a spontaneous buy!"</p>
+                        <p class="insight-text small">Only 1,741 ratings. You saw something special.</p>
+                    </div>
+                </div>
+
+                <!-- Slide 52: Reader Identity -->
+                <div class="slide" data-slide="52" data-bg="gradient-identity">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">WHO YOU ARE AS A READER</p>
+                        <div class="identity-traits">
+                            <span class="trait">History buff</span>
+                            <span class="trait">Deep-cut discoverer</span>
+                            <span class="trait">Hype skeptic</span>
+                            <span class="trait">Old soul</span>
+                            <span class="trait">Truth-seeker</span>
+                            <span class="trait">Mythology lover</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 53: The Verdict -->
+                <div class="slide" data-slide="53" data-bg="gradient-finale">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">THE VERDICT</p>
+                        <h2 class="verdict-title">Discerning Optimist</h2>
+                        <p class="verdict-subtitle">Someone who believes in humanity but refuses to be pandered to</p>
+                    </div>
+                </div>
+
+                <!-- Slide 54: Wants List -->
+                <div class="slide" data-slide="54" data-bg="gradient-finale-2">
+                    <div class="slide-content">
+                        <p class="slide-label">YOU WANT BOOKS THAT</p>
+                        <div class="wants-list">
+                            <div class="want-item"><span class="check">&#10003;</span> Treat complexity as a feature</div>
+                            <div class="want-item"><span class="check">&#10003;</span> Earn their emotional moments</div>
+                            <div class="want-item"><span class="check">&#10003;</span> Challenge comfortable assumptions</div>
+                            <div class="want-item"><span class="check">&#10003;</span> Amplify voices that don't get the spotlight</div>
+                            <div class="want-item"><span class="check">&#10003;</span> Transport you to different times and mindsets</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 55: The Standard -->
+                <div class="slide" data-slide="55" data-bg="gradient-standard">
+                    <div class="slide-content center-content">
+                        <p class="slide-label">THE STANDARD</p>
+                        <div class="standard-quote">
+                            <p class="big-quote">You'll devour a 4-book Italian saga, a 1958 Greek myth retelling, and a tuberculosis manifesto in the same year—</p>
+                            <p class="quote-kicker">but ruthlessly 1-star a fantasy sequel that coasts on hype.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 56: Final Quote -->
+                <div class="slide" data-slide="56" data-bg="gradient-end">
+                    <div class="slide-content center-content">
+                        <div class="final-message">
+                            <p class="final-quote">"Allie reads like she means it."</p>
+                            <div class="final-stats">
+                                <span>75 books</span>
+                                <span class="dot">&#8226;</span>
+                                <span>27,546 pages</span>
+                                <span class="dot">&#8226;</span>
+                                <span>2025</span>
+                            </div>
+                        </div>
+                        <button class="restart-btn" onclick="restartStory()">Watch Again</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-hints">
+                <div class="nav-left" onclick="prevSlide()"></div>
+                <div class="nav-right" onclick="nextSlide()"></div>
+            </div>
+
+            <div class="pause-indicator" id="pauseIndicator">PAUSED</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
