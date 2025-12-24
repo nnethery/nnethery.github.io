@@ -32,7 +32,7 @@ const wrappedData = {
         { name: "Romance", count: 23, percentage: 30.7 },
         { name: "Historical", count: 19, percentage: 25.3 },
         { name: "Nonfiction", count: 17, percentage: 22.7 },
-        { name: "Literary Fiction", count: 14, percentage: 18.7 },
+        { name: "Fae", count: 14, percentage: 18.7 },
         { name: "Contemporary", count: 11, percentage: 14.7 },
         { name: "Classics", count: 10, percentage: 13.3 },
         { name: "Mystery", count: 10, percentage: 13.3 },
