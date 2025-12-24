@@ -12,6 +12,14 @@
 <body>
     <div class="app-container">
         <div class="phone-frame">
+            <!-- Circular timer -->
+            <div class="circular-timer" id="circularTimer">
+                <svg viewBox="0 0 36 36">
+                    <circle class="timer-bg" cx="18" cy="18" r="16"></circle>
+                    <circle class="timer-progress" cx="18" cy="18" r="16" id="timerProgress"></circle>
+                </svg>
+            </div>
+
             <div class="progress-container">
                 <div class="progress-segments"></div>
             </div>
@@ -909,14 +917,14 @@
                                 <span>2025</span>
                             </div>
                         </div>
-                        <button class="restart-btn" onclick="restartStory()">Watch Again</button>
+                        <button class="restart-btn" onclick="event.stopPropagation(); restartStory();">Watch Again</button>
                     </div>
                 </div>
             </div>
 
             <div class="nav-hints">
-                <div class="nav-left" onclick="prevSlide()"></div>
-                <div class="nav-right" onclick="nextSlide()"></div>
+                <div class="nav-left"></div>
+                <div class="nav-right"></div>
             </div>
 
             <div class="pause-indicator" id="pauseIndicator">PAUSED</div>

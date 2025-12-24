@@ -8,7 +8,7 @@
 :root {
     --phone-width: 390px;
     --phone-height: 844px;
-    --progress-height: 3px;
+    --progress-height: 4px;
     --slide-duration: 8s;
 }
 
@@ -83,16 +83,73 @@ body {
     }
 }
 
-/* Progress Bar */
+/* Circular Timer */
+.circular-timer {
+    position: absolute;
+    top: 44px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 499px) {
+    .circular-timer {
+        top: 16px;
+        right: 16px;
+        width: 44px;
+        height: 44px;
+    }
+}
+
+.circular-timer svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.timer-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.2);
+    stroke-width: 2;
+}
+
+.timer-progress {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-dasharray: 100.53;
+    stroke-dashoffset: 100.53;
+    transition: stroke-dashoffset 0.1s linear;
+}
+
+.timer-progress.animating {
+    animation: timerFill var(--slide-duration) linear forwards;
+}
+
+.timer-progress.paused {
+    animation-play-state: paused;
+}
+
+@keyframes timerFill {
+    from { stroke-dashoffset: 100.53; }
+    to { stroke-dashoffset: 0; }
+}
+
+/* Progress Bar - now hidden but kept for functionality */
 .progress-container {
     position: absolute;
     top: 16px;
     left: 16px;
     right: 16px;
     z-index: 100;
-    display: flex;
+    display: none; /* Hidden - using circular timer instead */
     gap: 4px;
-    padding-top: 20px; /* Account for notch on desktop */
+    padding-top: 20px;
 }
 
 @media (max-width: 499px) {
@@ -1089,6 +1146,8 @@ body {
 }
 
 .restart-btn {
+    position: relative;
+    z-index: 200;
     padding: 16px 44px;
     background: rgba(255,255,255,0.12);
     border: 1px solid rgba(255,255,255,0.25);
@@ -1098,6 +1157,7 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    pointer-events: auto;
 }
 
 .restart-btn:hover {

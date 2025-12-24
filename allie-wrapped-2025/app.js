@@ -38,37 +38,63 @@ class WrappedStory {
     }
 
     setupEventListeners() {
-        // Touch/click navigation
-        document.querySelector('.nav-right').addEventListener('click', () => this.nextSlide());
-        document.querySelector('.nav-left').addEventListener('click', () => this.prevSlide());
+        const navRight = document.querySelector('.nav-right');
+        const navLeft = document.querySelector('.nav-left');
 
-        // Long press to pause
+        // Track touch state for distinguishing taps from long presses
         let pressTimer;
-        const storyContainer = document.querySelector('.story-container');
+        let touchStartTime;
+        let didLongPress = false;
+        let isTouchDevice = false;
 
-        storyContainer.addEventListener('mousedown', () => {
-            pressTimer = setTimeout(() => this.pause(), 200);
-        });
+        // Helper function to handle touch/click on nav areas
+        const handleNavTouch = (navElement, action) => {
+            // Click handler (works for mouse clicks only - skip on touch devices)
+            navElement.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Skip if this is a touch device (touch events already handled it)
+                if (isTouchDevice) return;
+                if (!didLongPress) {
+                    action();
+                }
+                didLongPress = false;
+            });
 
-        storyContainer.addEventListener('mouseup', () => {
-            clearTimeout(pressTimer);
-            if (this.isPaused) this.resume();
-        });
+            // Touch start - start long press timer
+            navElement.addEventListener('touchstart', (e) => {
+                isTouchDevice = true; // Mark as touch device to skip click handler
+                touchStartTime = Date.now();
+                didLongPress = false;
+                pressTimer = setTimeout(() => {
+                    didLongPress = true;
+                    this.pause();
+                }, 400); // 400ms for long press
+            }, { passive: true });
 
-        storyContainer.addEventListener('mouseleave', () => {
-            clearTimeout(pressTimer);
-            if (this.isPaused) this.resume();
-        });
+            // Touch end - either navigate or resume from pause
+            navElement.addEventListener('touchend', (e) => {
+                e.preventDefault(); // Prevent click event from also firing
+                clearTimeout(pressTimer);
+                const touchDuration = Date.now() - touchStartTime;
 
-        // Touch events for mobile
-        storyContainer.addEventListener('touchstart', (e) => {
-            pressTimer = setTimeout(() => this.pause(), 200);
-        }, { passive: true });
+                if (this.isPaused) {
+                    this.resume();
+                } else if (touchDuration < 400 && !didLongPress) {
+                    action();
+                }
+                didLongPress = false;
+            });
 
-        storyContainer.addEventListener('touchend', () => {
-            clearTimeout(pressTimer);
-            if (this.isPaused) this.resume();
-        });
+            // Touch cancel - clean up
+            navElement.addEventListener('touchcancel', () => {
+                clearTimeout(pressTimer);
+                didLongPress = false;
+            });
+        };
+
+        // Set up navigation for both sides
+        handleNavTouch(navRight, () => this.nextSlide());
+        handleNavTouch(navLeft, () => this.prevSlide());
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
@@ -85,9 +111,10 @@ class WrappedStory {
             if (i === index) seg.classList.add('active');
         });
 
-        // Show/hide slides
-        document.querySelectorAll('.slide').forEach((slide, i) => {
-            slide.classList.toggle('active', i === index);
+        // Show/hide slides - use data-slide attribute for reliable matching
+        document.querySelectorAll('.slide').forEach((slide) => {
+            const slideIndex = parseInt(slide.dataset.slide);
+            slide.classList.toggle('active', slideIndex === index);
         });
 
         // Update background
@@ -97,11 +124,31 @@ class WrappedStory {
             document.querySelector('.phone-frame').className = `phone-frame ${bg}`;
         }
 
+        // Update circular timer
+        this.updateCircularTimer(index);
+
         // Initialize slide-specific elements
         this.initSlideContent(index);
 
         // Start timer (except for first and last slide)
         this.startTimer();
+    }
+
+    updateCircularTimer(index) {
+        const timerProgress = document.getElementById('timerProgress');
+
+        // Clone and replace the element to force animation restart
+        const newProgress = timerProgress.cloneNode(true);
+        newProgress.classList.remove('animating', 'paused');
+        timerProgress.parentNode.replaceChild(newProgress, timerProgress);
+
+        // Start animation on non-first/last slides
+        if (index !== 0 && index !== this.totalSlides - 1) {
+            // Use requestAnimationFrame to ensure the DOM has updated
+            requestAnimationFrame(() => {
+                newProgress.classList.add('animating');
+            });
+        }
     }
 
     initSlideContent(index) {
@@ -318,11 +365,31 @@ class WrappedStory {
 }
 
 function restartStory() {
+    // Reset all state
     window.story.currentSlide = 0;
     window.story.chartsInitialized = {};
-    // Clear genre bubbles
+    window.story.isPaused = false;
+    window.story.clearTimer();
+
+    // Clear dynamic content
     const bubbles = document.getElementById('genreBubbles');
     if (bubbles) bubbles.innerHTML = '';
+
+    // Reset pause indicator
+    document.getElementById('pauseIndicator').classList.remove('visible');
+
+    // Reset all progress segments
+    window.story.progressSegments.forEach(seg => {
+        seg.classList.remove('active', 'complete', 'paused');
+    });
+
+    // Reset circular timer by cloning
+    const timerProgress = document.getElementById('timerProgress');
+    const newProgress = timerProgress.cloneNode(true);
+    newProgress.classList.remove('animating', 'paused');
+    timerProgress.parentNode.replaceChild(newProgress, timerProgress);
+
+    // Show first slide (this will set up the intro state correctly)
     window.story.showSlide(0);
 }
 
