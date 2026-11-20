@@ -157,6 +157,7 @@ tbody tr:last-child td{border-bottom:0}
 <li><strong>Google.</strong> We receive your email address and the identifier that Google gives us for your account.</li>
 </ul>
 <p>Each account has a random account ID. Our logs and analytics name you by that ID, not by your email address. We use your email address to sign you in, to keep one account for each email address, and to reply to you when you ask us to.</p>
+<p><strong>Password reset email.</strong> If you signed up with an email address and password and ask to reset your password, we email you a link. The link works once and for one hour. Today the email is sent by SuperTokens, the company that makes our sign-in software: our server passes your email address, the app's name and the reset link to SuperTokens' email service, and SuperTokens' servers send the message. We may later send it from our own mail server instead; this policy will say so. If your account signs in with Apple or Google, no reset link is sent.</p>
 <p>We do not send marketing email.</p>
 <h3 id="your-writing-and-attachments">Your writing and attachments</h3>
 <p>Longform stores what you write so that it is safe and so that it appears on each of your devices. This includes:</p>
@@ -166,7 +167,7 @@ tbody tr:last-child td{border-bottom:0}
 <li>files you attach: photos of handwritten pages, pictures, PDFs, and text or Markdown files, from the app, the camera, your photo library, the Files app or the share sheet;</li>
 <li>the word estimate for handwritten pages (the number only; see <a href="#what-stays-on-your-device">What stays on your device</a>).</li>
 </ul>
-<p>The app saves your writing on your device first. It then sends drafts, closing lines and ideas to our server in the background. Our server keeps earlier versions of each item, so that a sync mistake cannot lose your work.</p>
+<p>The app saves your writing on your device first. It then sends drafts, closing lines and ideas to our server in the background. Our server keeps earlier versions of each item, so that a sync mistake cannot lose your work. When you delete something, we keep it for 30 days so that you can get it back, and then delete it for good (see <a href="#what-happens-when-you-delete-things">What happens when you delete things</a>).</p>
 <p>We may read and analyse your writing to improve Longform, for example to understand how writers use a session or why a plan does not fit. We do not publish your writing, and we do not show it to anyone else. Longform does not send your writing to outside AI companies today. If that changes, we will update this policy first.</p>
 <h3 id="usage-analytics">Usage analytics</h3>
 <p>When analytics are on, the app records what you do in the app as short events. Examples: you opened a screen, started or finished a session, opened an exercise, saved an idea, or changed a setting. An event holds counts, durations, identifiers and choices from fixed lists. It never holds the text you write. Word and character counts are recorded as numbers or ranges, not as text.</p>
@@ -235,10 +236,15 @@ tbody tr:last-child td{border-bottom:0}
 <td data-label="What they do for Longform">Provides Google sign-in, if you choose it</td>
 <td data-label="Their privacy policy"><a href="https://policies.google.com/privacy">policies.google.com/privacy</a></td>
 </tr>
+<tr>
+<td data-label="Provider">SuperTokens (VRAI Labs)</td>
+<td data-label="What they do for Longform">Sends the password reset email, if you ask for one: receives your email address, the app's name and the reset link</td>
+<td data-label="Their privacy policy"><a href="https://supertokens.com/legal/privacy-policy">supertokens.com/legal/privacy-policy</a></td>
+</tr>
 </tbody>
 </table>
 </div>
-<p>Our sign-in service (SuperTokens), analytics store (Parseable), feature flags (Unleash) and log collector (OpenTelemetry) are open-source programs that we run on our own server. We have turned off the usage reporting in SuperTokens and Unleash.</p>
+<p>Our sign-in service (SuperTokens), analytics store (Parseable), feature flags (Unleash) and log collector (OpenTelemetry) are open-source programs that we run on our own server. We have turned off the usage reporting in SuperTokens and Unleash. The only data that leaves our server for SuperTokens' own servers is what a password reset email needs (see "Your account").</p>
 <p><strong>People who look at your data.</strong> Longform is one person. That person can see the data described in this policy, including your writing, and may read it to fix a problem, to answer you, or to improve Longform. Nobody else has that access.</p>
 <p><strong>Aggregated and de-identified data.</strong> We may combine or de-identify data so that it no longer identifies you, and use it for any purpose, for example to say that "most writers finish their first week".</p>
 <p><strong>When the law requires it.</strong> We disclose data only when a valid legal process, such as a subpoena or court order, compels us, or in an emergency that threatens someone's life or safety. We will tell you before we disclose your data, unless the law forbids it or it is an emergency.</p>
@@ -258,11 +264,11 @@ tbody tr:last-child td{border-bottom:0}
 <tbody>
 <tr>
 <td data-label="Data">Account (email, sign-in identifiers, password hash)</td>
-<td data-label="How long we keep it">Until your account is deleted</td>
+<td data-label="How long we keep it">Until your account is deleted: 30 days after you choose "Delete account", or at once if you choose to delete everything now</td>
 </tr>
 <tr>
 <td data-label="Data">Writing, plans and attachments</td>
-<td data-label="How long we keep it">Until you delete them or your account is deleted. Earlier and deleted versions of drafts, closing lines and ideas stay until your account is deleted.</td>
+<td data-label="How long we keep it">Until you delete them, and then 30 days, so that you can get them back; or until your account is deleted. Earlier versions of drafts, closing lines and ideas stay until your account is deleted, except that the versions of something you deleted go with it after 30 days.</td>
 </tr>
 <tr>
 <td data-label="Data">Device records (version, time zone, language)</td>
@@ -270,7 +276,7 @@ tbody tr:last-child td{border-bottom:0}
 </tr>
 <tr>
 <td data-label="Data">Feedback and screenshots</td>
-<td data-label="How long we keep it">Until you ask us to delete them or your account is deleted</td>
+<td data-label="How long we keep it">Until you ask us to delete them or your account is deleted. A copy of the feedback text in our analytics store has no time limit yet; we remove it when you ask.</td>
 </tr>
 <tr>
 <td data-label="Data">App logs and server logs</td>
@@ -290,7 +296,7 @@ tbody tr:last-child td{border-bottom:0}
 </tr>
 <tr>
 <td data-label="Data">Analytics profile (start date, plan form, time zone offset, language)</td>
-<td data-label="How long we keep it">Until your account is deleted</td>
+<td data-label="How long we keep it">Until your account is deleted from our database. Copies in our analytics store carry only your random account ID and have no time limit yet.</td>
 </tr>
 <tr>
 <td data-label="Data">Membership records</td>
@@ -298,18 +304,19 @@ tbody tr:last-child td{border-bottom:0}
 </tr>
 <tr>
 <td data-label="Data">Database backups</td>
-<td data-label="How long we keep it">We keep the newest 30 backups. Older ones are deleted as new ones are made.</td>
+<td data-label="How long we keep it">We keep the newest 30 backups, made each time we update the service and when we need one. Older ones are deleted as new ones are made, so a deleted account stays in a backup until that backup is replaced.</td>
 </tr>
 </tbody>
 </table>
 </div>
 <p>We may keep information longer when the law requires it or to resolve a dispute.</p>
 <h2 id="what-happens-when-you-delete-things">What happens when you delete things</h2>
+<p>When you delete something in Longform, we do not erase it at once. We hide it and keep it for 30 days, so that a slip of the thumb does not lose your work. Right after you delete it, the app offers Undo. After 30 days we delete it for good, from our server and from your devices.</p>
 <ul>
-<li><strong>A draft, closing line or idea.</strong> The app removes it from your device and marks it deleted on our server. The server keeps the earlier versions until your account is deleted.</li>
-<li><strong>An attachment.</strong> We delete its record and its file. Backblaze keeps a hidden copy of the file for 30 days and then removes it for good.</li>
-<li><strong>A plan.</strong> "Delete this plan" removes the plan, its schedule, its session records and its attachments. Your drafts, closing lines and ideas stay.</li>
-<li><strong>Your account.</strong> The app does not have a button to delete your account yet. Until it does, ask us to delete it: send a request with "Give feedback" in Profile while you are signed in to that account, or email <span class="todo">[contact email]</span> from the address on your account. Within <span class="todo">[30]</span> days we will delete your account, your writing and all earlier versions of it, your plans, attachments, feedback, and device records. Usage events and logs carry only your random account ID; once your account is gone, nothing links that ID to you, and those records then age out on the schedule above. Copies in database backups go when those backups are replaced, and deleted attachment files go after 30 days. Deleting your account does not cancel an App Store subscription; cancel that in your Apple account settings.</li>
+<li><strong>A draft, closing line or idea.</strong> The app hides it on your devices and marks it deleted on our server. For 30 days we keep it, with its earlier versions, and you can ask us to bring it back. Then we delete its text and its earlier versions for good. We keep only a note that the item was deleted, with no text, so that your other devices learn of the deletion.</li>
+<li><strong>An attachment or handwritten pages.</strong> We hide the record and keep the file for 30 days, and you can ask us to bring it back. Then we delete the record and the file. Backblaze keeps a hidden copy of the file for 30 more days and then removes it for good.</li>
+<li><strong>A plan.</strong> "Delete this plan" hides the plan, its schedule, its session records and its attachments. For 30 days you can restore the plan in the app, from your archived plans. Then we delete it for good. Your drafts, closing lines and ideas stay.</li>
+<li><strong>Your account.</strong> In the app, open Profile and choose "Delete account". You need a network connection. When you confirm, we close your account at once: you are signed out on every device, the account can no longer be used, nothing syncs, and the app erases that account's data from your iPhone, including writing that had not reached our server yet. We keep the account's data for 30 days. During that time you can sign in again and choose to restore the account with everything it held, or to start over, which deletes the old data for good at once. After 30 days we delete for good: your account and sign-in, your plans, schedules and session records, your drafts and closing lines with all their earlier versions, your ideas, the pages and files you attached, your feedback, your device records, your membership records, and, if you use Sign in with Apple, the tokens that let us act for your Apple account (we ask Apple to revoke them when that is set up on our server). If you do not want to wait, choose "Delete everything now instead" before you confirm: we then delete all of this at once, and the account cannot be restored. What remains after the deletion: usage events and logs that carry only your random account ID (once your account is gone, nothing links that ID to you, and those records age out on the schedule above: logs after 30 days, traces after 14 days, events after 25 months); copies in database backups until those backups are replaced; and attachment files that Backblaze keeps hidden for 30 days. Deleting your account does not cancel an App Store subscription; the app reminds you, and you cancel it in your Apple account settings. If you cannot use the app, email <span class="todo">[contact email]</span> from the address on your account and we will delete the account for you.</li>
 </ul>
 <h2 id="your-rights">Your rights</h2>
 <p>We give these rights to everyone, wherever you live:</p>
@@ -317,7 +324,7 @@ tbody tr:last-child td{border-bottom:0}
 <li><strong>Access.</strong> You can ask for a copy of the personal data we hold about you.</li>
 <li><strong>Export.</strong> In Profile, "Export my data" saves your drafts, closing lines, ideas, attachment records and settings from your device as one file. For a copy of what our server holds, email us.</li>
 <li><strong>Correction.</strong> You can ask us to correct data that is wrong.</li>
-<li><strong>Deletion.</strong> You can ask us to delete your data or your account (see above).</li>
+<li><strong>Deletion.</strong> You can delete your account in the app (Profile, then "Delete account"), or ask us to delete your data or your account (see above). Deleted things are kept for 30 days so that you can get them back, then deleted for good; you can ask us to delete something at once instead.</li>
 <li><strong>Objection and restriction.</strong> You can turn analytics off at any time in Profile. You can also ask us to stop or limit other uses of your data.</li>
 <li><strong>Portability.</strong> Your export is a standard JSON file that other software can read.</li>
 <li><strong>No discrimination.</strong> We will not treat you worse for using these rights.</li>
