@@ -4,90 +4,130 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>Longform Terms of Use</title>
-<meta name="description" content="The rules for using Longform, including your writing, membership and billing.">
-<style>:root{
-  --blue:#27365b;--blue-active:#273f75;--on-blue:#fdfdfa;--on-blue-muted:#dce5f7;
-  --brand:#d72f01;--ink:#222728;--muted:#535956;--line:#cdd0c7;--soft:#eeefea;
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://nethery.dev/longform/terms.html">
+<title>Terms of Use | Longform: Write Your Novel</title>
+<meta name="description" content="The rules for using the Longform writing app: your account, your writing, membership and billing, and our responsibilities.">
+<style>
+:root{
+  --blue:#27365b;--on-blue:#fdfdfa;--on-blue-muted:#dce5f7;--brand:#d72f01;
+  --ink:#222728;--muted:#535956;--line:#cdd0c7;--soft:#eeefea;
   --paper:#f5f5f1;--panel:#fdfdfa;--link:#273f75;--focus:#273f75;
-  color-scheme:light;
+  --todo-bg:#f6e7c1;--todo-ink:#3d2c0c;--todo-line:#a06921;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+  --sans:"Avenir Next","Helvetica Neue",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  color-scheme:light dark;
 }
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --blue:#27365b;--blue-active:#9db6ea;--on-blue:#f2f3ee;--on-blue-muted:#dce5f7;
+  :root{
+    --blue:#1c2742;--on-blue:#f2f3ee;--on-blue-muted:#dce5f7;
     --ink:#e7e9e3;--muted:#a9afaa;--line:#3a3f3c;--soft:#25292a;
     --paper:#141617;--panel:#1d2021;--link:#9db6ea;--focus:#9db6ea;
-    color-scheme:dark;
+    --todo-bg:#3b2f14;--todo-ink:#f3e2b3;--todo-line:#d39b4f;
   }
 }
-:root[data-theme="dark"]{
-  --blue:#27365b;--blue-active:#9db6ea;--on-blue:#f2f3ee;--on-blue-muted:#dce5f7;
-  --ink:#e7e9e3;--muted:#a9afaa;--line:#3a3f3c;--soft:#25292a;
-  --paper:#141617;--panel:#1d2021;--link:#9db6ea;--focus:#9db6ea;
-  color-scheme:dark;
-}
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-body{margin:0;background:var(--paper);color:var(--ink);
-  font-family:"Avenir Next","Helvetica Neue",system-ui,-apple-system,sans-serif;
-  font-size:17px;line-height:1.6;overflow-wrap:break-word}
-.masthead{background:var(--blue);color:var(--on-blue);padding:14px 16px}
-.masthead-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:12px}
-.mark{width:29px;height:29px;flex:none;border-radius:7px 7px 7px 2px;background:var(--brand);
-  color:#fff;display:grid;place-items:center;font-weight:650;font-size:17px;line-height:1}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  font-size:18px;line-height:1.65;overflow-wrap:break-word;
+  font-kerning:normal;text-rendering:optimizeLegibility}
+.skip{position:absolute;left:-9999px;top:0;background:var(--panel);color:var(--link);
+  padding:8px 12px;font-family:var(--sans);font-size:15px;z-index:10}
+.skip:focus{left:16px;top:8px}
+.masthead{background:var(--blue);color:var(--on-blue);padding:14px 16px;font-family:var(--sans)}
+.masthead-inner{max-width:42rem;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mark{width:28px;height:28px;flex:none;border-radius:7px 7px 7px 2px;background:var(--brand);
+  color:#fff;display:grid;place-items:center;font-weight:650;font-size:16px;line-height:1}
 .brand{font-weight:650;font-size:19px;letter-spacing:-0.02em;color:var(--on-blue);text-decoration:none}
-.masthead nav{margin-left:auto;display:flex;gap:16px;font-size:15px}
-.masthead nav a{color:var(--on-blue-muted);text-decoration:none;padding:6px 0}
+.brand:hover{text-decoration:underline;text-underline-offset:5px}
+.masthead nav{margin-left:auto;display:flex;gap:18px;font-size:15px}
+.masthead nav a{color:var(--on-blue-muted);text-decoration:none;padding:8px 0;display:inline-block}
+.masthead nav a:hover{color:var(--on-blue);text-decoration:underline;text-underline-offset:5px}
 .masthead nav a[aria-current="page"]{color:var(--on-blue);text-decoration:underline;text-underline-offset:5px}
-main{max-width:720px;margin:0 auto;padding:36px 16px 56px}
-h1{font-size:clamp(32px,7vw,42px);font-weight:650;line-height:1.1;letter-spacing:-0.035em;margin:0 0 6px}
-h2{font-size:23px;font-weight:650;line-height:1.25;letter-spacing:-0.02em;margin:44px 0 10px;
-  padding-top:22px;border-top:1px solid var(--line)}
-h3{font-size:18px;font-weight:650;line-height:1.3;margin:28px 0 6px}
-p,ul,ol{margin:0 0 14px}
-ul,ol{padding-left:1.3em}
-li{margin:0 0 6px}
-li>p{margin:0 0 6px}
-h1+p em{color:var(--muted);font-style:normal;font-size:15px}
-a{color:var(--link);text-underline-offset:3px}
+.masthead a:focus-visible{outline:2px solid var(--on-blue);outline-offset:3px;border-radius:3px}
+main{max-width:42rem;margin:0 auto;padding:40px 16px 48px}
+h1,h2,h3{font-family:var(--sans);font-weight:650;color:var(--ink);scroll-margin-top:16px}
+h1{font-size:clamp(32px,7vw,42px);line-height:1.1;letter-spacing:-0.03em;margin:0 0 8px}
+h2{font-size:23px;line-height:1.25;letter-spacing:-0.015em;margin:48px 0 12px;
+  padding-top:24px;border-top:1px solid var(--line)}
+h3{font-size:18px;line-height:1.3;margin:30px 0 8px}
+p,ul,ol{margin:0 0 16px}
+ul,ol{padding-left:1.4em}
+li{margin:0 0 8px}
+li::marker{color:var(--muted)}
+.effective{font-family:var(--sans);font-size:15px;color:var(--muted)}
+.effective em{font-style:normal}
+a{color:var(--link);text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{text-decoration-thickness:2px}
 a:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:3px}
-strong{font-weight:650}
-hr{border:0;border-top:1px solid var(--line);margin:44px 0 18px}
-hr+p{font-size:14px;color:var(--muted)}
-.table-wrap{overflow-x:auto;margin:6px 0 18px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
-table{border-collapse:collapse;width:100%;font-size:15px;line-height:1.45}
-th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+strong{font-weight:700}
+hr{border:0;border-top:1px solid var(--line);margin:48px 0 18px}
+.lede{font-size:21px;line-height:1.55}
+.home-links{list-style:none;padding:0;margin:28px 0 0;border-top:1px solid var(--line);font-family:var(--sans);font-size:17px}
+.home-links li{margin:0;border-bottom:1px solid var(--line)}
+.home-links a{display:block;padding:14px 0}
+.attribution{font-size:15px;color:var(--muted);line-height:1.55}
+.todo{background:var(--todo-bg);color:var(--todo-ink);border-bottom:1px dashed var(--todo-line);
+  padding:0 0.2em;border-radius:3px;font-family:var(--sans);font-size:0.88em;white-space:nowrap;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone}
+.table-wrap{margin:8px 0 22px;border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:15px;line-height:1.45}
+th,td{text-align:left;vertical-align:top;padding:11px 14px;border-bottom:1px solid var(--line)}
+td{overflow-wrap:break-word}
 th{font-weight:650;background:var(--soft)}
-tr:last-child td{border-bottom:0}
-footer{max-width:720px;margin:0 auto;padding:0 16px 40px;font-size:14px;color:var(--muted)}
-@media (max-width:420px){
-  body{font-size:16px}
-  .masthead nav{gap:12px;font-size:14px}
-  th,td{padding:9px 10px}
+tbody tr:last-child td{border-bottom:0}
+.site-footer{max-width:42rem;margin:0 auto;padding:0 16px 44px;font-family:var(--sans);font-size:14px;color:var(--muted)}
+.site-footer nav{display:flex;flex-wrap:wrap;gap:6px 20px;border-top:1px solid var(--line);padding-top:18px}
+.site-footer a{color:var(--link)}
+@media (max-width:640px){
+  body{font-size:17px}
+  main{padding-top:30px}
+  .table-wrap{overflow:visible}
+  table,thead,tbody,tr,th,td{display:block}
+  thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  tbody tr{padding:10px 14px;border-bottom:1px solid var(--line)}
+  tbody tr:last-child{border-bottom:0}
+  td{padding:3px 0;border:0}
+  td::before{content:attr(data-label);display:block;font-size:12.5px;font-weight:650;
+    letter-spacing:0.02em;color:var(--muted);margin-top:4px}
 }
 @media print{
-  .masthead{background:none;color:#000}
-  .masthead nav{display:none}
-  body{background:#fff;color:#000}
-}</style>
+  :root{--ink:#000;--muted:#333;--line:#999;--paper:#fff;--panel:#fff;--soft:#fff;--link:#000;
+    --todo-bg:#fff;--todo-ink:#000;--todo-line:#000}
+  html,body{background:#fff;color:#000}
+  body{font-size:11pt;line-height:1.5}
+  .skip,.masthead nav,.site-footer{display:none}
+  .masthead{background:none;color:#000;padding:0 0 8pt;border-bottom:1px solid #000}
+  .mark{border:1px solid #000;background:none;color:#000}
+  main{max-width:none;padding:12pt 0 0}
+  h2{break-after:avoid;page-break-after:avoid;margin-top:20pt}
+  h3{break-after:avoid;page-break-after:avoid}
+  tr,li{break-inside:avoid;page-break-inside:avoid}
+  .table-wrap{border-color:#999;overflow:visible;break-inside:avoid;page-break-inside:avoid}
+  a{text-decoration:underline}
+  main a[href^="http"]::after{content:" (" attr(href) ")";font-size:9pt;word-break:break-all}
+  .todo{border:1px dashed #000}
+}
+</style>
 </head>
-<body>
+<body id="top">
+<a class="skip" href="#content">Skip to content</a>
 <header class="masthead">
-  <div class="masthead-inner">
-    <span class="mark" aria-hidden="true">L</span>
-    <span class="brand">Longform</span>
-    <nav aria-label="Legal">
-      <a href="privacy.html">Privacy</a>
-      <a href="terms.html" aria-current="page">Terms</a>
-    </nav>
-  </div>
+<div class="masthead-inner">
+<span class="mark" aria-hidden="true">L</span>
+<a class="brand" href="./">Longform</a>
+<nav aria-label="Legal pages">
+<a href="privacy.html">Privacy Policy</a>
+<a href="terms.html" aria-current="page">Terms of Use</a>
+</nav>
+</div>
 </header>
-<main>
+<main id="content">
 <h1 id="terms-of-use">Terms of Use</h1>
-<p><em>Effective date: [EFFECTIVE DATE]</em></p>
+<p class="effective"><em>Effective date: <span class="todo">[effective date]</span></em></p>
 <p>Thank you for using Longform. We built it to help you write a first draft, one session at a time. These Terms of Use ("Terms") are the rules for using it. Please read them. <strong>These Terms limit our liability</strong>, and the sections on membership tell you how billing and cancelling work.</p>
-<p>When we say "Longform", "we", "our" or "us", we mean Noah Nethery, an individual developer in the United States who makes and runs Longform.</p>
-<p>When we say "the app", we mean Longform: Write Your Draft for iPhone, iPad and Apple Watch, including its share extension, widgets and Live Activity. When we say "the service", we mean the app and the server it connects to.</p>
+<p>When we say "Longform", "we", "our" or "us", we mean the individual developer in the United States who makes and runs Longform.</p>
+<p>When we say "the app", we mean Longform: Write Your Novel for iPhone, iPad and Apple Watch, including its share extension, widgets and Live Activity. When we say "the service", we mean the app and the server it connects to.</p>
 <p>When we say "you", we mean the person who uses the service.</p>
 <p>When we say "your writing", we mean everything you put into the service: drafts, closing lines, ideas, exercise text, plan details, attachments such as photos of handwritten pages, and feedback.</p>
 <p>By creating an account or using the service, you agree to these Terms and to our <a href="privacy.html">Privacy Policy</a>. If you do not agree, do not use the service.</p>
@@ -102,7 +142,7 @@ footer{max-width:720px;margin:0 auto;padding:0 16px 40px;font-size:14px;color:va
 <h2 id="3-your-account">3. Your account</h2>
 <ol type="1">
 <li>You can sign up with an email address and password, with Sign in with Apple, or with Google. One email address can have one account.</li>
-<li>You are responsible for keeping your sign-in secure and for everything that happens under your account. Tell us at once at <a href="mailto:noah@nethery.dev"><span>noah@nethery.dev</span></a> if you think someone else has used it.</li>
+<li>You are responsible for keeping your sign-in secure and for everything that happens under your account. Tell us at once with "Give feedback" in Profile, or at <span class="todo">[contact email]</span>, if you think someone else has used it.</li>
 <li>Your account is for you alone. Do not share it.</li>
 </ol>
 <h2 id="4-your-writing">4. Your writing</h2>
@@ -172,7 +212,7 @@ footer{max-width:720px;margin:0 auto;padding:0 16px 40px;font-size:14px;color:va
 <p>Because you get the app from Apple's App Store, you and we both acknowledge and agree that:</p>
 <ol type="1">
 <li><strong>Agreement.</strong> These Terms are between you and Longform only, and not with Apple. Longform, not Apple, is solely responsible for the app and its content.</li>
-<li><strong>Maintenance and support.</strong> Longform is solely responsible for providing maintenance and support for the app, as these Terms describe or as the law requires. Apple has no obligation at all to provide maintenance or support for the app. For support, email <a href="mailto:noah@nethery.dev"><span>noah@nethery.dev</span></a>.</li>
+<li><strong>Maintenance and support.</strong> Longform is solely responsible for providing maintenance and support for the app, as these Terms describe or as the law requires. Apple has no obligation at all to provide maintenance or support for the app. For support, use "Give feedback" in Profile, or email <span class="todo">[contact email]</span>.</li>
 <li><strong>Warranty.</strong> Longform is solely responsible for any product warranties, express or implied by law, to the extent they are not effectively disclaimed. If the app fails to conform to any applicable warranty, you may notify Apple, and Apple will refund the purchase price of the app (if any) to you. To the maximum extent the law allows, Apple has no other warranty obligation with respect to the app. Any other claims, losses, liabilities, damages, costs or expenses due to a failure to conform to a warranty are Longform's sole responsibility, subject to these Terms.</li>
 <li><strong>Product claims.</strong> Longform, not Apple, is responsible for addressing any claims by you or any third party relating to the app or your possession or use of it. This includes (a) product liability claims; (b) any claim that the app fails to conform to any applicable legal or regulatory requirement; and (c) claims under consumer protection, privacy or similar laws.</li>
 <li><strong>Intellectual property.</strong> If a third party claims that the app, or your possession and use of it, infringes that third party's intellectual property rights, Longform, not Apple, is solely responsible for the investigation, defence, settlement and discharge of that claim.</li>
@@ -181,7 +221,7 @@ footer{max-width:720px;margin:0 auto;padding:0 16px 40px;font-size:14px;color:va
 <li><strong>Third-party beneficiary.</strong> Apple and Apple's subsidiaries are third-party beneficiaries of these Terms. When you accept these Terms, Apple will have the right (and will be deemed to have accepted the right) to enforce them against you as a third-party beneficiary.</li>
 </ol>
 <h2 id="16-governing-law">16. Governing law</h2>
-<p>These Terms are governed by the laws of the State of [STATE] and the federal laws of the United States, without regard to conflict-of-law rules. Except where the law of your country gives you the right to bring a claim where you live, any dispute will be decided by the state or federal courts in [COUNTY, STATE], and you and we agree to their jurisdiction. If you are a consumer in the EU or the UK, you may also bring a claim in the courts of the country where you live, and the mandatory consumer protections of that country still apply.</p>
+<p>These Terms are governed by the laws of the State of <span class="todo">[state]</span> and the federal laws of the United States, without regard to conflict-of-law rules. Except where the law of your country gives you the right to bring a claim where you live, any dispute will be decided by the state or federal courts in <span class="todo">[county, state]</span>, and you and we agree to their jurisdiction. If you are a consumer in the EU or the UK, you may also bring a claim in the courts of the country where you live, and the mandatory consumer protections of that country still apply.</p>
 <h2 id="17-general">17. General</h2>
 <ol type="1">
 <li><strong>Changes to these Terms.</strong> We may change these Terms. If a change is significant, we will tell you in the app at least 30 days before it takes effect. If you keep using the service after that, you accept the new Terms. If you do not accept them, stop using the service and cancel your membership.</li>
@@ -194,10 +234,21 @@ footer{max-width:720px;margin:0 auto;padding:0 16px 40px;font-size:14px;color:va
 </ol>
 <h2 id="18-contact">18. Contact</h2>
 <p>Questions, complaints or claims about the app or these Terms go to:</p>
-<p>Noah Nethery [POSTAL ADDRESS] Email: <a href="mailto:noah@nethery.dev"><span>noah@nethery.dev</span></a> Telephone: [PHONE NUMBER]</p>
-<hr />
-<p><em>Adapted from the <a href="https://github.com/basecamp/policies">Basecamp open-source policies</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Changed to describe Longform. The sections on warranties, liability, indemnity and general terms also draw on the <a href="https://github.com/github/site-policy">GitHub Terms of Service</a> (CC0 1.0).</em></p>
+<p>Longform<br>
+<span class="todo">[postal address]</span><br>
+In the app: "Give feedback" in Profile<br>
+Email: <span class="todo">[contact email]</span><br>
+Telephone: <span class="todo">[phone number]</span></p>
+<hr>
+<p class="attribution"><em>Adapted from the <a href="https://github.com/basecamp/policies">Basecamp open-source policies</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Changed to describe Longform. The sections on warranties, liability, indemnity and general terms also draw on the <a href="https://github.com/github/site-policy">GitHub Terms of Service</a> (CC0 1.0).</em></p>
 </main>
-<footer>Questions: <a href="mailto:noah@nethery.dev">noah@nethery.dev</a></footer>
+<footer class="site-footer">
+<nav aria-label="Legal pages, footer">
+<span>Longform: Write Your Novel</span>
+<a href="privacy.html">Privacy Policy</a>
+<a href="terms.html" aria-current="page">Terms of Use</a>
+<a href="#top">Back to top</a>
+</nav>
+</footer>
 </body>
 </html>
